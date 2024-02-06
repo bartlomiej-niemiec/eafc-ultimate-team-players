@@ -1,8 +1,16 @@
 from bs4 import BeautifulSoup
 from src.utils.constants import SOUP_HTML_PARSER_FEATURE, DIV_TAG
-from src.eafc.player_data import PlayerDataKeys
 import src.futwiz.utils.constants as FutwizConstants
 import requests
+
+
+class PlayerDataKeys:
+    PlayerID = "id"
+    Name = "name"
+    Position = "position"
+    AltPosition = "alt position"
+    Price = "price"
+    OverallRating = "overall rating"
 
 
 class PlayerPage:
@@ -10,25 +18,29 @@ class PlayerPage:
 
     def __init__(self, page_url):
         self._page_url = page_url
-        request_text = requests.get(self._page_url).text
-        self._soup = BeautifulSoup(request_text, SOUP_HTML_PARSER_FEATURE)
+        request_response = requests.get(self._page_url)
+        if request_response.status_code != 200:
+            print(request_response.status_code)
+        self._soup = BeautifulSoup(request_response.text, SOUP_HTML_PARSER_FEATURE)
         self._data = dict()
 
     def fetch_data(self):
-        try:
-            self._fetch_player_details()
-            self._fetch_player_price()
-            self._fetch_player_position()
-            self._fetch_player_alt_position()
-            self._fetch_player_id()
-        except:
-            print(f"Page Error: {self._page_url}")
+        self._fetch_player_details()
+        self._fetch_player_price()
+        self._fetch_player_position()
+        self._fetch_player_alt_position()
+        self._fetch_player_id()
 
     def get_data(self):
         return self._data
 
     def _fetch_player_details(self):
-        _player_details = self._soup.find(DIV_TAG, class_=FutwizConstants.DIV_PLAYER_DETAILS_DATA).contents
+        _player_details = []
+        _player_details_object = self._soup.find(DIV_TAG, class_=FutwizConstants.DIV_PLAYER_DETAILS_DATA)
+        if _player_details_object:
+            _player_details = _player_details_object.contents
+        else:
+            self._retry_request()
         for content in _player_details:
             if self._is_not_str_instance(content):
                 content_text_splitted = [element for element in content.text.split('\n') if element]
@@ -63,3 +75,9 @@ class PlayerPage:
 
     def _is_not_str_instance(self, object):
         return not isinstance(object, str)
+
+    def _retry_request(self):
+        request_response = requests.get(self._page_url)
+        if request_response.status_code != 200:
+            print(request_response.status_code)
+        self._soup = BeautifulSoup(request_response.text, SOUP_HTML_PARSER_FEATURE)
