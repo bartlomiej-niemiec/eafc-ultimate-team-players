@@ -1,28 +1,26 @@
-from concurrent.futures import ThreadPoolExecutor
-from worker.worker import Worker
-from worker.thread_safe_player_page import SafePlayersPageUrl
-import asyncio
-
-PAGES_TO_DIG = 10
-
-
-async def get_work_done():
-    page_url = SafePlayersPageUrl()
-    with ThreadPoolExecutor(max_workers=5) as executor:
-        loop = asyncio.get_event_loop()
-        tasks = [
-            loop.run_in_executor(
-                executor,
-                Worker.dig,
-                page_url
-            )
-            for i in range(PAGES_TO_DIG)
-        ]
-
-    return await asyncio.gather(*tasks)
+from fut_players.fut_players import fut_players_runner
+from fut_players.logger import Logger, FutCompleteProgressBar, PageCompleteMonitor
+from fut_players.thread_safe_player_page import TSPlayersPageUrlGenerator
+from fut_players.thread_safe_queue import LoggingQueue
+from utils.constants import DELAY_BETWEEN_REQUEST
 
 
 if __name__ == "__main__":
-    loop = asyncio.get_event_loop()
-    future = asyncio.ensure_future(get_work_done())
-    loop.run_until_complete(future)
+    pages = 2
+    page_complete_monitor = PageCompleteMonitor()
+    progress_bar = FutCompleteProgressBar(start_page_no=0, end_page_no=pages)
+    page_complete_monitor.RegisterObserver(progress_bar)
+    player_page_generator = TSPlayersPageUrlGenerator(0)
+    logging_queue = LoggingQueue()
+    logger = Logger(logging_queue)
+    logger.start()
+    fut_players_runner(
+        player_page_generator,
+        DELAY_BETWEEN_REQUEST,
+        pages,
+        logging_queue,
+        page_complete_monitor
+    )
+    logger.stop()
+
+
