@@ -11,3 +11,6 @@ DIV_PLAYER_DETAILS_DATA = "player-details-inner"
 
 # A TAG CLASS NAMES
 A_PLAYERS_LIST = "latest-player-card"
+
+# PLAYERS
+NO_PLAYERS_PER_PAGE = 28
