@@ -8,9 +8,14 @@ class TSPlayersPageUrlGenerator(PlayersPageUrlGenerator):
         self._lock = Lock()
         super(TSPlayersPageUrlGenerator, self).__init__(start_page_no)
 
-    def get_next_page_url(self):
+    def next_page(self):
         self._lock.acquire()
-        page_url = super().get_next_page_url()
+        self._current_page += 1
+        self._lock.release()
+
+    def get_page_url(self):
+        self._lock.acquire()
+        page_url = super().get_page_url()
         self._lock.release()
         return page_url
 

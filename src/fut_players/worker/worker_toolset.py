@@ -23,4 +23,4 @@ class WorkerToolset:
         return self._request_delay
 
     def get_next_page_url(self):
-        return self._player_page_generator.get_next_page_url()
+        return self._player_page_generator.get_page_url()

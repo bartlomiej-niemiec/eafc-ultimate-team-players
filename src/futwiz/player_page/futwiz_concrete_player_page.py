@@ -19,8 +19,6 @@ class PlayerPage:
     def __init__(self, page_url):
         self._page_url = page_url
         request_response = requests.get(self._page_url)
-        if request_response.status_code != 200:
-            print(request_response.status_code)
         self._soup = BeautifulSoup(request_response.text, SOUP_HTML_PARSER_FEATURE)
         self._player_data = dict()
 

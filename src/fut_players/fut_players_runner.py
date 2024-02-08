@@ -3,7 +3,7 @@ from fut_players.csv_logger.csvlogger import CsvLogger
 from fut_players.progress_bar.page_complete_notifier import PageCompleteNotifier
 from fut_players.progress_bar.progress_bar import FutCompleteProgressBar
 from fut_players.worker.thread_safe_player_page import TSPlayersPageUrlGenerator
-from fut_players.csv_logger.csv_logging_queue import LoggingQueue
+from fut_players.csv_logger.thread_safe_queue import ThreadSafeQueue
 from futwiz.utils.last_page_checker import PlayersLastPage
 from futwiz.utils.constants import NO_PLAYERS_PER_PAGE
 from utils.constants import DELAY_BETWEEN_REQUEST
@@ -50,7 +50,7 @@ class FutPlayers:
         self._page_complete_notifier = PageCompleteNotifier()
         self._page_complete_notifier.RegisterObserver(self._progress_bar)
         self._player_page_generator = TSPlayersPageUrlGenerator(self.start_page_number)
-        self._logging_queue = LoggingQueue()
+        self._logging_queue = ThreadSafeQueue()
         self.worker_toolset = WorkerToolset(
             self._logging_queue,
             self._page_complete_notifier,

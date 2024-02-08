@@ -2,7 +2,7 @@ from queue import Queue
 from multiprocessing import Lock
 
 
-class LoggingQueue:
+class ThreadSafeQueue:
 
     def __init__(self):
         self._queue = Queue()
