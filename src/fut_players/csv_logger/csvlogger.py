@@ -7,10 +7,10 @@ ALT_POS_KEY = 'Alt Pos.'
 FILES_NAME = 'fut_players.csv'
 
 
-class Logger(Thread):
+class CsvLogger(Thread):
 
     def __init__(self, shared_queue):
-        super(Logger, self).__init__()
+        super(CsvLogger, self).__init__()
         self.shared_queue = shared_queue
         self._stop_event = Event()
         self._csv_dictwriter = None

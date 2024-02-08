@@ -1,14 +1,14 @@
 from threading import Lock
 
 
-class PageCompleteMonitor:
+class PageCompleteNotifier:
 
     def __init__(self):
         self._completed_pages = 0
         self._lock = Lock()
         self._observers = []
 
-    def complete(self):
+    def increment(self):
         self._lock.acquire()
         self._completed_pages += 1
         self._NotifyObservers()
