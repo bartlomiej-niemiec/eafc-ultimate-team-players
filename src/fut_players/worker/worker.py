@@ -1,7 +1,7 @@
 import time
 from futwiz.players_page.futwiz_players_page import PlayersPage
 from futwiz.player_page.futwiz_concrete_player_page import PlayerPage
-from fut_players.worker_toolset import WorkerToolset
+from fut_players.worker.worker_toolset import WorkerToolset
 
 
 class Worker:
