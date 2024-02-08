@@ -4,6 +4,7 @@ import csv
 
 LOGGER_THREAD_DELAY = 0.2
 ALT_POS_KEY = 'Alt Pos.'
+FILES_NAME = 'fut_players.csv'
 
 
 class Logger(Thread):
@@ -26,7 +27,7 @@ class Logger(Thread):
     def _logger(self):
         queue_object = None
         is_first_log = True
-        with open('fut_players.csv', 'w', newline='', encoding="utf-8") as csvfile:
+        with open(FILES_NAME, 'w', newline='', encoding="utf-8") as csvfile:
             while True:
                 if self._stop_event.isSet():
                     break
