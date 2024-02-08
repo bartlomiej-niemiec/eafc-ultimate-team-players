@@ -4,13 +4,11 @@ from threading import Lock
 class PageCompleteNotifier:
 
     def __init__(self):
-        self._completed_pages = 0
         self._lock = Lock()
         self._observers = []
 
     def increment(self):
         self._lock.acquire()
-        self._completed_pages += 1
         self._NotifyObservers()
         self._lock.release()
 
