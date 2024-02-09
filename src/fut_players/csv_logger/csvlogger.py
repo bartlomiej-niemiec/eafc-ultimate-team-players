@@ -2,7 +2,7 @@ import time
 from threading import Thread, Event
 import csv
 
-LOGGER_THREAD_DELAY = 0.5
+LOGGER_THREAD_DELAY = 0.3
 ALT_POS_KEY = 'Alt Pos.'
 FILES_NAME = 'fut_players.csv'
 
