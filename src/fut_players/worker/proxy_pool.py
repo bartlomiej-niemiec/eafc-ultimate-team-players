@@ -15,5 +15,5 @@ class ProxyPool:
 
     def dealloc(self, proxy):
         self._lock.acquire()
-        self._proxies.push_back(proxy)
+        self._proxies.append(proxy)
         self._lock.release()

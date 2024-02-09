@@ -1,5 +1,6 @@
 from fut_players.worker.worker import start_work
 from fut_players.worker.proxy_pool import ProxyPool
+from fut_players.worker.proxy_provider import ProxyProvider
 from fut_players.csv_logger.csvlogger import CsvLogger
 from fut_players.progress_bar.page_complete_notifier import PlayerCompleteNotifier
 from fut_players.progress_bar.progress_bar import FutCompleteProgressBar
@@ -8,7 +9,6 @@ from futwiz.players_page.futwiz_players_page_url import PlayersPageUrlGenerator
 from futwiz.utils.last_page_checker import PlayersLastPage
 from futwiz.utils.constants import NO_PLAYERS_PER_PAGE
 from utils.constants import DELAY_BETWEEN_REQUEST
-from utils.constants import HTTP_PROXIES
 from fut_players.worker.worker_toolset import WorkerToolset
 
 
@@ -54,7 +54,7 @@ class FutPlayers:
         self._page_complete_notifier.RegisterObserver(self._progress_bar)
         self._player_page_generator = PlayersPageUrlGenerator(self.start_page_number)
         self._logging_queue = ThreadSafeQueue()
-        self._proxies = ProxyPool(HTTP_PROXIES)
+        self._proxies = ProxyPool(ProxyProvider().get_proxy_servers())
         self.worker_toolset = WorkerToolset(
             self._logging_queue,
             self._page_complete_notifier,
