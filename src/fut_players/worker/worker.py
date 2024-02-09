@@ -11,8 +11,9 @@ class Worker:
 
     @classmethod
     def work(cls, toolset: WorkerToolset):
+        proxy = toolset.proxies.alloc()
         page_url = toolset.get_next_page_url()
-        players_page = PlayersPage(page_url)
+        players_page = PlayersPage(page_url, proxy)
         players = players_page.get_players_ref_list()
         del players_page
         for player in players:

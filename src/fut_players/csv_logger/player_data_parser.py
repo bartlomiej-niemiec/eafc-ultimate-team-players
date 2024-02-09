@@ -20,7 +20,6 @@ class PlayerDataParser:
     def __init__(self, player_ref):
         self._page_url = player_ref.href
         self._soup = BeautifulSoup(player_ref.get_page_source(), SOUP_HTML_PARSER_FEATURE)
-        self._player_data = dict()
 
     def parse_and_get_player_data(self, with_players_stats=False):
         self._parse_common_data()

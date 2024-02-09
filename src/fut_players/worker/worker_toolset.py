@@ -3,12 +3,13 @@ from threading import Lock
 
 class WorkerToolset:
 
-    def __init__(self, logging_queue, page_complete_notifier, player_page_generator, request_delay):
+    def __init__(self, logging_queue, page_complete_notifier, player_page_generator, proxies, request_delay):
         self._logging_queue = logging_queue
         self._page_complete_notifier = page_complete_notifier
         self._player_page_generator = player_page_generator
         self._request_delay = request_delay
         self._lock = Lock()
+        self.proxies = proxies
 
     def add_to_csv_queue(self, player_data):
         return self._logging_queue.put(player_data)
