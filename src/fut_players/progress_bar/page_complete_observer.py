@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class PageCompleteObserver(ABC):
+class PlayerCompleteObserver(ABC):
 
     @abstractmethod
     def update(self):

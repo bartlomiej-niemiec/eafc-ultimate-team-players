@@ -21,3 +21,6 @@ class ThreadSafeQueue:
 
     def empty(self):
         return self._queue.empty()
+
+    def size(self):
+        return self._queue.qsize()

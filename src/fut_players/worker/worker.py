@@ -17,8 +17,8 @@ class Worker:
         for player in players:
             player_page = PlayerPage(player.href)
             player_data = player_page.get_player_data()
-            toolset.logging_queue.put(player_data)
-            toolset.page_complete_monitor.increment()
+            toolset.add_to_csv_queue(player_data)
+            toolset.notify_of_player_complete()
             time.sleep(toolset.request_delay)
 
 

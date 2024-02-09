@@ -1,9 +1,9 @@
 from fut_players.worker.worker import start_work
 from fut_players.csv_logger.csvlogger import CsvLogger
-from fut_players.progress_bar.page_complete_notifier import PageCompleteNotifier
+from fut_players.progress_bar.page_complete_notifier import PlayerCompleteNotifier
 from fut_players.progress_bar.progress_bar import FutCompleteProgressBar
-from fut_players.worker.thread_safe_player_page import TSPlayersPageUrlGenerator
 from fut_players.csv_logger.thread_safe_queue import ThreadSafeQueue
+from futwiz.players_page.futwiz_players_page_url import PlayersPageUrlGenerator
 from futwiz.utils.last_page_checker import PlayersLastPage
 from futwiz.utils.constants import NO_PLAYERS_PER_PAGE
 from utils.constants import DELAY_BETWEEN_REQUEST
@@ -25,14 +25,14 @@ class FutPlayers:
         self._init()
         logger = CsvLogger(self._logging_queue)
         logger.start()
-        start_work(self.worker_toolset, self.last_page_number)
+        start_work(self.worker_toolset, self.last_page_number - self.start_page_number + 1)
         logger.stop()
 
     def _init(self):
-        self._get_last_page_to_work()
+        self._get_last_players_page()
         self._build_the_toolset()
 
-    def _get_last_page_to_work(self):
+    def _get_last_players_page(self):
         futwiz_last_page = PlayersLastPage()
         futwiz_last_page_number = futwiz_last_page.get_last_page_number()
         if self.last_page_number:
@@ -47,9 +47,9 @@ class FutPlayers:
     def _build_the_toolset(self):
         self._progress_bar = FutCompleteProgressBar(start_page_no=self.start_page_number, end_page_no=self.last_page_number,
                                                     no_players_in_last_page=self._no_players_in_last_page)
-        self._page_complete_notifier = PageCompleteNotifier()
+        self._page_complete_notifier = PlayerCompleteNotifier()
         self._page_complete_notifier.RegisterObserver(self._progress_bar)
-        self._player_page_generator = TSPlayersPageUrlGenerator(self.start_page_number)
+        self._player_page_generator = PlayersPageUrlGenerator(self.start_page_number)
         self._logging_queue = ThreadSafeQueue()
         self.worker_toolset = WorkerToolset(
             self._logging_queue,

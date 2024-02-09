@@ -2,7 +2,7 @@ import time
 from threading import Thread, Event
 import csv
 
-LOGGER_THREAD_DELAY = 0.2
+LOGGER_THREAD_DELAY = 0.5
 ALT_POS_KEY = 'Alt Pos.'
 FILES_NAME = 'fut_players.csv'
 
@@ -33,18 +33,12 @@ class CsvLogger(Thread):
                     break
                 if not self.shared_queue.empty():
                     queue_object = self.shared_queue.get()
-                    self._add_alt_pos_if_is_missing(queue_object)
                     if is_first_log:
-                        self._first_save(csvfile, queue_object)
+                        self._write_headers(csvfile, queue_object.keys())
                         is_first_log = False
                     self._csv_dictwriter.writerow(queue_object)
                 time.sleep(LOGGER_THREAD_DELAY)
 
-    def _first_save(self, csvfile, object):
-        self._csv_dictwriter = csv.DictWriter(csvfile, fieldnames=object.keys())
+    def _write_headers(self, csvfile, headers):
+        self._csv_dictwriter = csv.DictWriter(csvfile, fieldnames=headers)
         self._csv_dictwriter.writeheader()
-
-    def _add_alt_pos_if_is_missing(self, object):
-        alt_pos = object.get(ALT_POS_KEY)
-        if not alt_pos:
-            object[ALT_POS_KEY] = None

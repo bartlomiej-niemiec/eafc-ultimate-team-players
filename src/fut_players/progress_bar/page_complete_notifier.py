@@ -1,7 +1,7 @@
 from threading import Lock
 
 
-class PageCompleteNotifier:
+class PlayerCompleteNotifier:
 
     def __init__(self):
         self._lock = Lock()
