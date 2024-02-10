@@ -9,6 +9,9 @@ DIV_PLAYER_MARKET_VALUE = "price-num"
 DIV_PLAYER_OVERALL_RATING = "card-24-rating"
 DIV_PLAYER_DETAILS_DATA = "player-details-inner"
 
+# PLAYER STATS
+DIV_PLAYERS_ALL_STATS_IN_GAMES = "player-stats-ingames"
+
 # A TAG CLASS NAMES
 A_PLAYERS_LIST = "latest-player-card"
 

@@ -7,12 +7,12 @@ from src.futwiz.utils.card_rarity_checker import get_card_version
 
 
 class PlayerDataKeys:
-    PlayerID = "id"
-    Name = "name"
-    Position = "position"
+    PlayerID = "ID"
+    Name = "Name"
+    Position = "Position"
     AltPosition = "Alt Pos."
-    Price = "price"
-    OverallRating = "overall rating"
+    Price = "Price"
+    OverallRating = "Overall Rating"
     Version = "Version"
 
 
@@ -38,7 +38,9 @@ class PlayerPage:
         self._fetch_player_position()
         self._fetch_player_alt_position()
         self._fetch_player_id()
+        self._fetch_player_overall_rating()
         self._add_version_if_missing()
+        self._fetch_player_game_stats()
 
     def _fetch_player_details(self):
         _player_details_object = self._soup.find(DIV_TAG, class_=FutwizConstants.DIV_PLAYER_DETAILS_DATA)
@@ -69,11 +71,37 @@ class PlayerPage:
     def _fetch_player_position(self):
         player_position_div = self._soup.find(DIV_TAG, class_=FutwizConstants.DIV_PLAYER_POSITION)
         player_position = player_position_div.contents[self._CONTENT_INDEX]
-        self._player_data[PlayerDataKeys.Name] = player_position
+        self._player_data[PlayerDataKeys.Position] = player_position
 
     def _fetch_player_id(self):
         LAST_ELEMENT = -1
         self._player_data[PlayerDataKeys.PlayerID] = self._page_url.split('/')[LAST_ELEMENT]
+
+    def _fetch_player_game_stats(self):
+        player_stats_in_games = self._soup.find(DIV_TAG, class_=FutwizConstants.DIV_PLAYERS_ALL_STATS_IN_GAMES)
+        player_stats_in_games_text = [element for element in player_stats_in_games.text.split('\n') if element]
+        playstyle_info_start_index = player_stats_in_games_text.index("PlayStyles+")
+        self._filter_stats(player_stats_in_games_text, playstyle_info_start_index)
+        self._filter_playstyles(player_stats_in_games_text, playstyle_info_start_index)
+
+    def _filter_stats(self, player_stats_in_games_text, playstyle_info_start_index):
+        player_stats_in_games_pairs = {player_stats_in_games_text[i]: player_stats_in_games_text[i + 1] for i in
+                                       range(1, playstyle_info_start_index, 2)}
+        self._player_data.update(player_stats_in_games_pairs)
+
+    def _filter_playstyles(self, player_stats_in_games_text, playstyle_info_start_index):
+        playstyle_map = {"PlayStyles+": "", "PlayStyles": ""}
+        i = 0
+        for i in range(playstyle_info_start_index + 1, len(player_stats_in_games_text), 2):
+            if player_stats_in_games_text[i] != "PlayStyles" and player_stats_in_games_text[i + 1] != "PlayStyles":
+                playstyle_map["PlayStyles+"] += player_stats_in_games_text[i] + ", "
+            else:
+                break
+
+        for i in range(i + 1, len(player_stats_in_games_text), 2):
+            playstyle_map["PlayStyles"] += player_stats_in_games_text[i] + ", "
+
+        self._player_data.update(playstyle_map)
 
     def _filter_player_details_content(self, player_details_content):
         return filter(_is_not_str_instance, player_details_content)
@@ -82,6 +110,7 @@ class PlayerPage:
         player_card_version = self._player_data.get(PlayerDataKeys.Version)
         if not player_card_version:
             self._player_data[PlayerDataKeys.Version] = get_card_version(self._soup)
+
 
 def _is_not_str_instance(object):
     return not isinstance(object, str)
