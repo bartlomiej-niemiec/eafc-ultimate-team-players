@@ -2,9 +2,23 @@ import time
 from threading import Thread, Event
 import csv
 
-LOGGER_THREAD_DELAY = 0.3
+LOGGER_THREAD_DELAY = 0.2
 ALT_POS_KEY = 'Alt Pos.'
 FILES_NAME = 'fut_players.csv'
+
+GK_HEADERS = [
+    "DIV",
+    "GK. Diving",
+    "HAN",
+    "GK. Handling",
+    "KIC",
+    "GK. Kicking",
+    "SPD",
+    "POS",
+    "GK. Pos",
+    "REF",
+    "GK. Reflexes",
+]
 
 
 class CsvLogger(Thread):
@@ -40,5 +54,6 @@ class CsvLogger(Thread):
                 time.sleep(LOGGER_THREAD_DELAY)
 
     def _write_headers(self, csvfile, headers):
-        self._csv_dictwriter = csv.DictWriter(csvfile, fieldnames=headers)
+        merged_headers = list(headers)  # + GK_HEADERS
+        self._csv_dictwriter = csv.DictWriter(csvfile, fieldnames=merged_headers)
         self._csv_dictwriter.writeheader()

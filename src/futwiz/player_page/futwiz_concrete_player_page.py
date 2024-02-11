@@ -40,7 +40,7 @@ class PlayerPage:
         self._fetch_player_id()
         self._fetch_player_overall_rating()
         self._add_version_if_missing()
-        self._fetch_player_game_stats()
+        #self._fetch_player_game_stats()
 
     def _fetch_player_details(self):
         _player_details_object = self._soup.find(DIV_TAG, class_=FutwizConstants.DIV_PLAYER_DETAILS_DATA)
@@ -114,3 +114,4 @@ class PlayerPage:
 
 def _is_not_str_instance(object):
     return not isinstance(object, str)
+
