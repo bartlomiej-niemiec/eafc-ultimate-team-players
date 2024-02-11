@@ -1,13 +1,13 @@
 from bs4 import BeautifulSoup
 from futwiz.utils.constants import FUTWIZ_BASE_URL, A_PLAYERS_LIST
 from utils.constants import SOUP_HTML_PARSER_FEATURE, A_TAG
-import requests
+from utils.requests import get_request_with_retries
 
 
 class PlayersPage:
 
     def __init__(self, page_url):
-        page_source = requests.get(page_url).text
+        page_source = get_request_with_retries(page_url, no_retries=2)
         self._soup = BeautifulSoup(page_source, SOUP_HTML_PARSER_FEATURE)
         self._players = []
 
