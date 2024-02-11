@@ -2,7 +2,7 @@ import time
 from utils.constants import NO_WORKERS
 from concurrent.futures import ThreadPoolExecutor
 from futwiz.players_page.futwiz_players_page import PlayersPage
-from futwiz.player_page.futwiz_concrete_player_page import PlayerPage
+from futwiz.player_page.futwiz_concrete_player_page import get_player_page_source
 from fut_players.worker.worker_toolset import WorkerToolset
 import asyncio
 
@@ -14,12 +14,14 @@ class Worker:
         page_url = toolset.get_next_page_url()
         players_page = PlayersPage(page_url)
         players = players_page.get_players_ref_list()
+        del players_page
         for player in players:
-            player_page = PlayerPage(player.href)
-            player_data = player_page.get_player_data()
-            toolset.add_to_csv_queue(player_data)
+            player_page_text = get_player_page_source(player.href, 5)
+            player.set_page_source(player_page_text)
+            toolset.add_to_csv_queue(player)
             toolset.notify_of_player_complete()
             time.sleep(toolset.request_delay)
+        del players
 
 
 def start_work(worker_toolset, no_pages_to_work_on):

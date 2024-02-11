@@ -26,6 +26,13 @@ class PlayerRef:
 
     def __init__(self, href):
         self.href = FUTWIZ_BASE_URL + href
+        self._page_source = None
+
+    def set_page_source(self, context):
+        self._page_source = context
+
+    def get_page_source(self):
+        return self._page_source
 
 
 def create_player_ref(a_tag):

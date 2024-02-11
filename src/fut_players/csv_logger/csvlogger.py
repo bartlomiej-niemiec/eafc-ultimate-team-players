@@ -1,5 +1,6 @@
 import time
 from threading import Thread, Event
+from fut_players.csv_logger.player_data_parser import PlayerDataParser
 import csv
 
 LOGGER_THREAD_DELAY = 0.2
@@ -36,7 +37,8 @@ class CsvLogger(Thread):
         self._stop_event.set()
         while not self.shared_queue.empty():
             queue_object = self.shared_queue.get()
-            self._csv_dictwriter.writerow(queue_object)
+            player_data = PlayerDataParser(queue_object).parse_and_get_player_data()
+            self._csv_dictwriter.writerow(player_data)
 
     def _logger(self):
         queue_object = None
@@ -47,10 +49,11 @@ class CsvLogger(Thread):
                     break
                 if not self.shared_queue.empty():
                     queue_object = self.shared_queue.get()
+                    player_data = PlayerDataParser(queue_object).parse_and_get_player_data()
                     if is_first_log:
-                        self._write_headers(csvfile, queue_object.keys())
+                        self._write_headers(csvfile, player_data.keys())
                         is_first_log = False
-                    self._csv_dictwriter.writerow(queue_object)
+                    self._csv_dictwriter.writerow(player_data)
                 time.sleep(LOGGER_THREAD_DELAY)
 
     def _write_headers(self, csvfile, headers):
