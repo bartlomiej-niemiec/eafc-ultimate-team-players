@@ -1,10 +1,4 @@
-import requests
-from bs4 import BeautifulSoup
-import json
 
-
-DIV_PROXY_SERVER = "spy1x"
-TR_TAG = "tr"
 
 HTTP_PROXIES = [
     {"http": "http://bjzvjwwb:6gyibfuuixex@38.154.227.167:5868"},
@@ -20,10 +14,14 @@ HTTP_PROXIES = [
 ]
 
 
-class ProxyProvider:
-
-    def __init__(self):
-        self._proxies = HTTP_PROXIES#[{"http": f"{proxy['ip']}:{proxy['port']}"} for proxy in self.proxies_json]
-
-    def get_proxy_servers(self):
-        return self._proxies
+def get_from_file(file_path):
+    proxies = list()
+    with open(file_path, "r") as f:
+        for line in f:
+            stripped_line = line.strip()
+            proxies.append(
+                {
+                    "http": stripped_line
+                }
+            )
+    return proxies

@@ -4,7 +4,6 @@ from fut_players.csv_logger.player_data_parser import PlayerDataParser
 import csv
 
 LOGGER_THREAD_DELAY = 0.2
-ALT_POS_KEY = 'Alt Pos.'
 FILES_NAME = 'fut_players.csv'
 
 GK_HEADERS = [

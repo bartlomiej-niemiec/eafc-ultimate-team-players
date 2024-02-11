@@ -6,8 +6,8 @@ from utils.requests import get_request_with_retries
 
 class PlayersPage:
 
-    def __init__(self, page_url):
-        page_source = get_request_with_retries(page_url, no_retries=2)
+    def __init__(self, page_url, proxies, use_proxy):
+        page_source = get_request_with_retries(page_url, 2, use_proxy, proxies)
         self._soup = BeautifulSoup(page_source, SOUP_HTML_PARSER_FEATURE)
         self._players = []
 

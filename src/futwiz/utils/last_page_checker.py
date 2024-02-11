@@ -15,7 +15,7 @@ class PlayersLastPage:
     def get_last_page_number(self):
         if not self.last_page_no:
             number_of_players_in_page = None
-            while _ := PlayersPage(self.page_url_generator.get_page_url()).get_players_ref_list():
+            while _ := PlayersPage(self.page_url_generator.get_page_url(), None, False).get_players_ref_list():
                 number_of_players_in_page = _
                 self.page_url_generator.next_page()
             self._number_of_players_in_page = len(number_of_players_in_page)

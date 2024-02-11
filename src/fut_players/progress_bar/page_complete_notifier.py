@@ -9,17 +9,17 @@ class PlayerCompleteNotifier:
 
     def increment(self):
         self._lock.acquire()
-        self._NotifyObservers()
+        self._notify_observers()
         self._lock.release()
 
-    def RegisterObserver(self, observer):
+    def register_observer(self, observer):
         if observer not in self._observers:
             self._observers.append(observer)
 
-    def UnregisterObserver(self, observer):
+    def unregister_observer(self, observer):
         if observer in self._observers:
             self._observers.remove(observer)
 
-    def _NotifyObservers(self):
+    def _notify_observers(self):
         for observer in self._observers:
             observer.update()

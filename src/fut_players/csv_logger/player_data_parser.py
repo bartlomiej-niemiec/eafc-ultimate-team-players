@@ -1,7 +1,7 @@
 import src.futwiz.utils.constants as FutwizConstants
 from bs4 import BeautifulSoup
 from src.utils.constants import SOUP_HTML_PARSER_FEATURE, DIV_TAG
-from src.futwiz.utils.card_rarity_checker import get_card_version
+from src.futwiz.utils.card_version_checker import get_card_version
 
 
 class PlayerDataKeys:
@@ -20,6 +20,7 @@ class PlayerDataParser:
     def __init__(self, player_ref):
         self._page_url = player_ref.href
         self._soup = BeautifulSoup(player_ref.get_page_source(), SOUP_HTML_PARSER_FEATURE)
+        self._player_data = dict()
 
     def parse_and_get_player_data(self, with_players_stats=False):
         self._parse_common_data()
