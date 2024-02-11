@@ -17,7 +17,7 @@ def get_request_with_retries(page_url, no_retries, use_proxy_server=False, proxy
             response = requests.get(page_url)
         response.raise_for_status()
         source = response.text
-        if not source:
+        if not source and no_retries > 0:
             get_request_with_retries(page_url, 0, use_proxy_server, proxy_pool, with_delay=False)
         return source
     except Exception as exc:

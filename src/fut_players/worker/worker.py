@@ -21,7 +21,6 @@ class Worker:
                 raise "None"
             player.set_page_source(player_page_text)
             toolset.add_to_csv_queue(player)
-            toolset.notify_of_player_complete()
             time.sleep(toolset.request_delay)
         del players
 

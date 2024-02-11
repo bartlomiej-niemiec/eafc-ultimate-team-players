@@ -26,7 +26,7 @@ class FutPlayers:
 
     def run(self):
         self._init()
-        logger = CsvLogger(self._logging_queue)
+        logger = CsvLogger(self._logging_queue, self._page_complete_notifier)
         logger.start()
         start_work(self.worker_toolset, self.last_page_number - self.start_page_number + 1)
         logger.stop()
@@ -57,7 +57,6 @@ class FutPlayers:
         self._proxies = ProxyPool(get_from_file(r"C:\Users\bniem\Downloads\free_proxy_servers.txt"))
         self.worker_toolset = WorkerToolset(
             self._logging_queue,
-            self._page_complete_notifier,
             self._player_page_generator,
             self._proxies,
             DELAY_BETWEEN_REQUEST
