@@ -2,9 +2,11 @@ import time
 from utils.constants import NO_WORKERS
 from concurrent.futures import ThreadPoolExecutor
 from futwiz.players_page.futwiz_players_page import PlayersPage
-from utils.requests import get_request_with_retries
+from utils.get_requests import get_request_with_retries
 from fut_players.worker.worker_toolset import WorkerToolset
 import asyncio
+
+LOW_DELAY = 0.1
 
 
 class Worker:
@@ -12,13 +14,14 @@ class Worker:
     @classmethod
     def work(cls, toolset: WorkerToolset):
         page_url = toolset.get_next_page_url()
-        players_page = PlayersPage(page_url, toolset.proxies, True)
+        players_page = PlayersPage(page_url, toolset.proxies, False)
         players = players_page.get_players_ref_list()
         del players_page
         for player in players:
-            player_page_text = get_request_with_retries(player.href, 5, True, toolset.proxies)
+            player_page_text = get_request_with_retries(player.href, 5, False, toolset.proxies)
             if not player_page_text:
-                raise "None"
+                print(f"Error for url: {player.href}")
+                continue
             player.set_page_source(player_page_text)
             toolset.add_to_csv_queue(player)
             time.sleep(toolset.request_delay)

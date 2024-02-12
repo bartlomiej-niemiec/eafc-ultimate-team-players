@@ -3,7 +3,7 @@ from threading import Thread, Event
 from fut_players.csv_logger.player_data_parser import PlayerDataParser
 import csv
 
-LOGGER_THREAD_DELAY = 0.1
+LOGGER_THREAD_DELAY = 0.2
 FILES_NAME = 'fut_players.csv'
 
 
@@ -39,7 +39,7 @@ class CsvLogger(Thread):
                         self._wirte_headers()
                         init_csv_logger = False
                     self._csv_dictwriter.writerow(player_data)
-                self._player_complete_notifier.increment()
+                    self._player_complete_notifier.increment()
                 time.sleep(LOGGER_THREAD_DELAY)
 
     def _create_csv_dict_write(self, csvfile, headers):

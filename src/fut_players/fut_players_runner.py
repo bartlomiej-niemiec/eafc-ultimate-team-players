@@ -1,6 +1,6 @@
 from fut_players.worker.worker import start_work
 from utils.proxy_pool import ProxyPool
-from utils.proxy_servers import HTTP_PROXIES, get_from_file
+from utils.proxy_servers import get_proxy_servers_from_file
 from fut_players.csv_logger.csvlogger import CsvLogger
 from fut_players.progress_bar.page_complete_notifier import PlayerCompleteNotifier
 from fut_players.progress_bar.progress_bar import FutCompleteProgressBar
@@ -54,11 +54,11 @@ class FutPlayers:
         self._page_complete_notifier.register_observer(self._progress_bar)
         self._player_page_generator = PlayersPageUrlGenerator(self.start_page_number)
         self._logging_queue = ThreadSafeQueue()
-        self._proxies = ProxyPool(get_from_file(r"C:\Users\bniem\Downloads\free_proxy_servers.txt"))
+        self._proxies = ProxyPool(get_proxy_servers_from_file(r"C:\Users\bniem\Downloads\free_proxy_servers.txt"))
         self.worker_toolset = WorkerToolset(
             self._logging_queue,
             self._player_page_generator,
             self._proxies,
-            DELAY_BETWEEN_REQUEST
+            DELAY_BETWEEN_REQUEST,
         )
 

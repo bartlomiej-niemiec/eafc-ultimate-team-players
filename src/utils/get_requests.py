@@ -1,8 +1,7 @@
 import time
-
 import requests
 
-REQUEST_DELAY = 5
+REQUEST_DELAY = 3
 
 
 def get_request_with_retries(page_url, no_retries, use_proxy_server=False, proxy_pool=None, with_delay=False):
@@ -18,14 +17,18 @@ def get_request_with_retries(page_url, no_retries, use_proxy_server=False, proxy
         response.raise_for_status()
         source = response.text
         if not source and no_retries > 0:
-            get_request_with_retries(page_url, 0, use_proxy_server, proxy_pool, with_delay=False)
+            get_request_with_retries(page_url, 0, use_proxy_server, proxy_pool, with_delay=True)
         return source
-    except Exception as exc:
-        if no_retries == 0:
-            raise GetRequestError(f"Couldn't retrieve source from url: {page_url}")
+    except requests.exceptions.HTTPError as exc:
+        status_code = response.status_code
+        if status_code == 404:
+            return None
         else:
-            no_retries -= 1
-            get_request_with_retries(page_url, no_retries, use_proxy_server, proxy_pool, with_delay=False)
+            if no_retries == 0:
+                raise GetRequestError(f"Couldn't retrieve source from url: {page_url}")
+            else:
+                no_retries -= 1
+                get_request_with_retries(page_url, no_retries, use_proxy_server, proxy_pool, with_delay=True)
 
 
 class GetRequestError(Exception):

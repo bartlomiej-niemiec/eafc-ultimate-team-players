@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 from futwiz.utils.constants import FUTWIZ_BASE_URL, A_PLAYERS_LIST
 from utils.constants import SOUP_HTML_PARSER_FEATURE, A_TAG
-from utils.requests import get_request_with_retries
+from utils.get_requests import get_request_with_retries
 
 
 class PlayersPage:

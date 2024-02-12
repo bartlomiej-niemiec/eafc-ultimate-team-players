@@ -3,7 +3,7 @@ from threading import Lock
 
 class WorkerToolset:
 
-    def __init__(self, logging_queue, page_complete_notifier, player_page_generator, proxies, request_delay):
+    def __init__(self, logging_queue, player_page_generator, proxies, request_delay):
         self._logging_queue = logging_queue
         self._player_page_generator = player_page_generator
         self._request_delay = request_delay
