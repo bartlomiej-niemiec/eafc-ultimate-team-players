@@ -1,14 +1,17 @@
 from bs4 import BeautifulSoup
 from futwiz.utils.constants import FUTWIZ_BASE_URL, A_PLAYERS_LIST
 from utils.constants import SOUP_HTML_PARSER_FEATURE, A_TAG
-from utils.get_requests import get_request_with_retries
+from utils.get_requests import GetRequest
 
 
 class PlayersPage:
 
-    def __init__(self, page_url, proxies, use_proxy):
-        page_source = get_request_with_retries(page_url, 2, use_proxy, proxies)
-        self._soup = BeautifulSoup(page_source, SOUP_HTML_PARSER_FEATURE)
+    def __init__(self, page_url, get_request: GetRequest, use_proxy=False):
+        get_request.no_retries = 5
+        get_request.send(page_url, use_proxy)
+        if get_request.error_code:
+            PlayerPageRequest(get_request.error_msg)
+        self._soup = BeautifulSoup(get_request.get_page_html_text(), SOUP_HTML_PARSER_FEATURE)
         self._players = []
 
     def get_players_ref_list(self):
@@ -37,3 +40,7 @@ class PlayerRef:
 
 def create_player_ref(a_tag):
     return PlayerRef(a_tag.attrs['href'])
+
+
+class PlayerPageRequest(Exception):
+    pass

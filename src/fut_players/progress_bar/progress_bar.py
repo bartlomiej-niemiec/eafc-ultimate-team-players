@@ -24,5 +24,5 @@ class FutCompleteProgressBar(PlayerCompleteObserver):
         if start_page_no == end_page_no:
             no_iterations = no_players_in_last_page
         else:
-            no_iterations = (end_page_no - start_page_no) * NO_PLAYERS_PER_PAGE + no_players_in_last_page
+            no_iterations = ((end_page_no - start_page_no) * NO_PLAYERS_PER_PAGE) + no_players_in_last_page
         return no_iterations

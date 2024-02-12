@@ -29,7 +29,7 @@ class CsvLogger(Thread):
         with open(FILES_NAME, 'w', newline='', encoding="utf-8") as csvfile:
             while True:
                 if self._stop_event.isSet():
-                    self._save_queue_lefts_and_terminate()
+                    self._write_queue_lefts_and_terminate()
                     break
                 if not self.shared_queue.empty():
                     queue_object = self.shared_queue.get()
@@ -48,7 +48,7 @@ class CsvLogger(Thread):
     def _wirte_headers(self):
         self._csv_dictwriter.writeheader()
 
-    def _save_queue_lefts_and_terminate(self):
+    def _write_queue_lefts_and_terminate(self):
         while not self.shared_queue.empty():
             queue_object = self.shared_queue.get()
             player_data = PlayerDataParser(queue_object).parse_and_get_player_data()
