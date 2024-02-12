@@ -1,6 +1,5 @@
 import configparser
-
-
+import os
 class ConfigKeys:
     USE_PROXY = "use_proxy"
     PROXY_SERVERS_FILE_PATH = "proxy_servers_file_path"
@@ -17,9 +16,7 @@ class ConfigParser:
 
     def read(self):
         self._config[ConfigKeys.USE_PROXY] = self._config_parser["PROXY_SERVERS"]["USE_PROXY"].lower() == 'true'
-        self._config[ConfigKeys.PROXY_SERVERS_FILE_PATH] = self._config_parser["PROXY_SERVERS"][
-            "PROXY_SERVERS_FILE_PATH"]
-
+        self._config[ConfigKeys.PROXY_SERVERS_FILE_PATH] = os.path.abspath(self._config_parser["PROXY_SERVERS"]["PROXY_SERVERS_FILE_PATH"])
         self._config[ConfigKeys.NO_WORKING_THREADS] = int(self._config_parser["THREADS"]["NO_WORKING_THREADS"])
         self._config[ConfigKeys.DELAY_BETWEEN_REQUESTS_S] = int(self._config_parser["THREADS"]["DELAY_BETWEEN_REQUESTS_S"])
 

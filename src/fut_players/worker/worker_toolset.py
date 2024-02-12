@@ -14,7 +14,10 @@ class WorkerToolset:
         self.proxies = None
         if self._config.use_proxy():
             self.proxies = self._proxies = ProxyPool(
-                get_proxy_servers_from_file(self._config.get_proxy_servers_filepath()))
+                get_proxy_servers_from_file(
+                    self._config.get_proxy_servers_filepath()
+                )
+            )
         self._lock = Lock()
 
     def add_to_csv_queue(self, player_data):

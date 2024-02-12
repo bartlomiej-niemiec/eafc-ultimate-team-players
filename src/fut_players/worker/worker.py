@@ -1,7 +1,5 @@
 import time
-
 from futwiz.players_page.futwiz_players_page_url import PlayersPageUrlGenerator
-from utils.constants import NO_WORKERS
 from concurrent.futures import ThreadPoolExecutor
 from futwiz.players_page.futwiz_players_page import PlayersPage
 from utils.get_requests import GetRequest, ErrorCode
