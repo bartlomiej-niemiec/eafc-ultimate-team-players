@@ -3,7 +3,7 @@ import requests
 from utils.proxy_pool import ProxyPool
 from enum import Enum
 
-REQUEST_DELAY = 1.5
+REQUEST_DELAY = 2.5
 
 
 class GetRequest:

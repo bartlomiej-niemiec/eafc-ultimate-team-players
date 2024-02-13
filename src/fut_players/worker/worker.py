@@ -15,7 +15,7 @@ class Worker:
     def work(cls, toolset: WorkerToolset):
         page_url = toolset.get_next_page_url()
         get_request = GetRequest(toolset.proxies)
-        get_request.no_retries = 5
+        get_request.no_retries = 10
         players_page = PlayersPage(page_url, get_request, toolset.use_proxy())
         players = players_page.get_players_ref_list()
         del players_page
