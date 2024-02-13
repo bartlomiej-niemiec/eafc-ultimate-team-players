@@ -1,10 +1,11 @@
 import time
-from futwiz.players_page.futwiz_players_page_url import PlayersPageUrlGenerator
+from futwiz.players_page_generator import PlayersPageUrlGenerator
 from concurrent.futures import ThreadPoolExecutor
-from futwiz.players_page.futwiz_players_page import PlayersPage
+from futwiz.players_page_parser import PlayersPageParser
 from utils.get_requests import GetRequest, ErrorCode
 from fut_players.worker.worker_toolset import WorkerToolset
 import asyncio
+import config
 
 LOW_DELAY = 0.1
 
@@ -15,8 +16,9 @@ class Worker:
     def work(cls, toolset: WorkerToolset):
         page_url = toolset.get_next_page_url()
         get_request = GetRequest(toolset.proxies)
-        get_request.no_retries = 10
-        players_page = PlayersPage(page_url, get_request, toolset.use_proxy())
+        get_request.no_retries = config.MAX_RETRIES
+        get_request.send(page_url, toolset.use_proxy())
+        players_page = PlayersPageParser(get_request.get_page_html_text())
         players = players_page.get_players_ref_list()
         del players_page
         for player in players:
@@ -32,14 +34,13 @@ class Worker:
 
 class Supervisor:
 
-    def __init__(self, csv_logging_queue, config, start_page_no, last_page_no):
+    def __init__(self, csv_logging_queue, start_page_no, last_page_no):
         self._worker_toolset = WorkerToolset(
             csv_logging_queue,
             PlayersPageUrlGenerator(start_page_no),
-            config
         )
         self._no_pages_to_work = last_page_no - start_page_no + 1
-        self._no_workers = config.get_no_working_threads()
+        self._no_workers = config.NO_WORKING_THREADS
 
     def start(self):
         loop = asyncio.get_event_loop()

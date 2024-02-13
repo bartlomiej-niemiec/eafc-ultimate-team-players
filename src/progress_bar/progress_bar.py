@@ -1,6 +1,6 @@
 import tqdm
-from fut_players.progress_bar.page_complete_observer import PlayerCompleteObserver
-from futwiz.utils.constants import NO_PLAYERS_PER_PAGE
+from progress_bar.page_complete_observer import PlayerCompleteObserver
+from futwiz.constants import NO_PLAYERS_PER_PAGE
 
 BAR_FORMAT = "{l_bar}{bar} [players: {n_fmt}/{total_fmt} time spent: {elapsed}]"
 BAR_GREEN_COLOUR = 'green'

@@ -1,6 +1,7 @@
 import time
 from threading import Thread, Event
-from fut_players.csv_logger.player_data_parser import PlayerDataParser
+from futwiz.player_data_parser import PlayerDataParser, PlayerDataConfigurator
+import config
 import csv
 
 LOGGER_THREAD_DELAY = 0.1
@@ -11,6 +12,8 @@ class CsvLogger(Thread):
 
     def __init__(self, shared_queue, player_complete_notifier):
         super(CsvLogger, self).__init__()
+        self._configurator = PlayerDataConfigurator()
+        self._configurator.create_player_data_dict_template(config.INCLUDE_PLAYER_STATS)
         self.shared_queue = shared_queue
         self._stop_event = Event()
         self._csv_dictwriter = None
@@ -33,7 +36,7 @@ class CsvLogger(Thread):
                     break
                 if not self.shared_queue.empty():
                     queue_object = self.shared_queue.get()
-                    player_data = PlayerDataParser(queue_object).parse_and_get_player_data()
+                    player_data = PlayerDataParser(queue_object, self._configurator.get_player_data_template()).parse_and_get_player_data(config.INCLUDE_PLAYER_STATS)
                     if init_csv_logger:
                         self._create_csv_dict_write(csvfile, player_data.keys())
                         self._wirte_headers()
@@ -51,6 +54,6 @@ class CsvLogger(Thread):
     def _write_queue_lefts_and_terminate(self):
         while not self.shared_queue.empty():
             queue_object = self.shared_queue.get()
-            player_data = PlayerDataParser(queue_object).parse_and_get_player_data()
+            player_data = PlayerDataParser(queue_object, self._configurator.get_player_data_template()).parse_and_get_player_data(config.INCLUDE_PLAYER_STATS)
             self._csv_dictwriter.writerow(player_data)
             self._player_complete_notifier.increment()

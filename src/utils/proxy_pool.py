@@ -1,6 +1,5 @@
 from threading import Lock
 
-
 class ProxyPool:
 
     def __init__(self, proxies):
