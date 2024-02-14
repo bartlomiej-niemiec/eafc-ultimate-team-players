@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 from futwiz.constants import FUTWIZ_BASE_URL, A_PLAYERS_LIST
+from futwiz.player_data_parser import PlayerDataKeys
 from utils.constants import SOUP_HTML_PARSER, A_TAG
-from player_data_parser import PlayerDataKeys
 
 
 class PlayersPageParser:

@@ -25,16 +25,8 @@ class Worker:
         for player in players:
             get_request.send(player.href, toolset.use_proxy())
             if get_request.error_code == ErrorCode.HTTP_NOT_FOUND:
-                print(get_request.error_msg)
                 continue
-            elif get_request.get_page_html_text() is None:
-                print(
-                    f"""Failed to get source for player: {player.href}
-                        Error code: {get_request.error_code}
-                        Error msg: {get_request.error_msg}"""
-                      )
-                continue
-            player.page_source(get_request.get_page_html_text())
+            player.page_source = get_request.get_page_html_text()
             toolset.add_to_csv_queue(player)
             time.sleep(toolset.get_request_delay())
         del players

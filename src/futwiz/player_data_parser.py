@@ -134,10 +134,8 @@ class PlayerDataParser:
         self._fetch_player_price()
         self._fetch_player_position()
         self._fetch_player_alt_position()
-        self._fetch_player_id()
         self._fetch_player_overall_rating()
         self._add_card_version_if_not_special()
-        self._add_player_futwiz_link()
 
     def _parse_player_stats_data(self):
         self._fetch_player_game_stats()

@@ -16,15 +16,12 @@ class PlayersLastPage:
         self._get_request.no_retries = 3
 
     def get_page_number(self):
-        number_of_players_in_page = None
         self._get_request.send(self.page_url_generator.get_page_url(), False)
         while _ := PlayersPageParser(self._get_request.get_page_html_text()).get_players_ref_list():
-            number_of_players_in_page = _
+            self._number_of_players_in_page = len(_)
             self.page_url_generator.next_page()
             self._get_request.send(self.page_url_generator.get_page_url(), False)
-        self._number_of_players_in_page = len(number_of_players_in_page)
         return self.page_url_generator.get_page_number() - 1
 
     def get_no_players(self):
         return self._number_of_players_in_page
-
