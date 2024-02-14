@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 from futwiz.constants import FUTWIZ_BASE_URL, A_PLAYERS_LIST
 from utils.constants import SOUP_HTML_PARSER, A_TAG
+from player_data_parser import PlayerDataKeys
 
 
 class PlayersPageParser:
@@ -24,14 +25,16 @@ class PlayerRef:
 
     def __init__(self, href):
         self.href = FUTWIZ_BASE_URL + href
-        self._page_source = None
+        self.page_source = None
 
-    def set_page_source(self, context):
-        self._page_source = context
-
-    def get_page_source(self):
-        return self._page_source
+    def get_dict(self):
+        LAST_ELEMENT = -1
+        return {
+            PlayerDataKeys.ID: self.href.split('/')[LAST_ELEMENT],
+            PlayerDataKeys.FutwizLink: self.href
+        }
 
 
 def create_player_ref(a_tag):
     return PlayerRef(a_tag.attrs['href'])
+

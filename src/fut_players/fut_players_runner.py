@@ -1,4 +1,4 @@
-from fut_players.worker.worker import Supervisor
+from fut_players.worker import Supervisor
 from csv_logger.csvlogger import CsvLogger
 from progress_bar.page_complete_notifier import PlayerCompleteNotifier
 from progress_bar.progress_bar import FutCompleteProgressBar

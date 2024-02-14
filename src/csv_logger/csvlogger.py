@@ -1,24 +1,23 @@
 import time
 from threading import Thread, Event
-from futwiz.player_data_parser import PlayerDataParser, PlayerDataConfigurator
+from futwiz.player_data_parser import PlayerDataParser, PlayerDataTemplateFactory
 import config
 import csv
 
-LOGGER_THREAD_DELAY = 0.1
-FILES_NAME = 'fut_players.csv'
+LOGGER_THREAD_DELAY = config.LOGGING_THREAD_DELAY
+FILES_NAME = config.CSV_FILE_NAME
 
 
 class CsvLogger(Thread):
 
-    def __init__(self, shared_queue, player_complete_notifier):
+    def __init__(self, player_ref_queue, player_complete_notifier):
         super(CsvLogger, self).__init__()
-        self._configurator = PlayerDataConfigurator()
-        self._configurator.create_player_data_dict_template(config.INCLUDE_PLAYER_STATS)
-        self.shared_queue = shared_queue
+        self.player_ref_queue = player_ref_queue
         self._stop_event = Event()
         self._csv_dictwriter = None
         self._player_complete_notifier = player_complete_notifier
         self._main_loop_in_progress = False
+        self._player_data_parser = PlayerDataParser()
 
     def run(self):
         self._logger()
@@ -28,32 +27,35 @@ class CsvLogger(Thread):
 
     def _logger(self):
         queue_object = None
-        init_csv_logger = True
         with open(FILES_NAME, 'w', newline='', encoding="utf-8") as csvfile:
+            self._init_csv_writer(csvfile)
             while True:
                 if self._stop_event.isSet():
                     self._write_queue_lefts_and_terminate()
                     break
-                if not self.shared_queue.empty():
-                    queue_object = self.shared_queue.get()
-                    player_data = PlayerDataParser(queue_object, self._configurator.get_player_data_template()).parse_and_get_player_data(config.INCLUDE_PLAYER_STATS)
-                    if init_csv_logger:
-                        self._create_csv_dict_write(csvfile, player_data.keys())
-                        self._wirte_headers()
-                        init_csv_logger = False
+                if not self.player_ref_queue.empty():
+                    player_ref = self.player_ref_queue.get()
+                    player_data = self._player_data_parser.parse_and_get_player_data(
+                        player_ref.page_source,
+                        config.INCLUDE_PLAYER_STATS
+                    )
+                    player_data.update(player_ref.get_dict())
                     self._csv_dictwriter.writerow(player_data)
-                    self._player_complete_notifier.increment()
+                    self._player_complete_notifier.complete()
                 time.sleep(LOGGER_THREAD_DELAY)
 
-    def _create_csv_dict_write(self, csvfile, headers):
+    def _init_csv_writer(self, csvfile):
+        headers = PlayerDataTemplateFactory().create_player_data_dict_template(config.INCLUDE_PLAYER_STATS).keys()
         self._csv_dictwriter = csv.DictWriter(csvfile, fieldnames=headers)
-
-    def _wirte_headers(self):
         self._csv_dictwriter.writeheader()
 
     def _write_queue_lefts_and_terminate(self):
-        while not self.shared_queue.empty():
-            queue_object = self.shared_queue.get()
-            player_data = PlayerDataParser(queue_object, self._configurator.get_player_data_template()).parse_and_get_player_data(config.INCLUDE_PLAYER_STATS)
+        while not self.player_ref_queue.empty():
+            player_ref = self.player_ref_queue.get()
+            player_data = self._player_data_parser.parse_and_get_player_data(
+                player_ref.page_source,
+                config.INCLUDE_PLAYER_STATS
+            )
+            player_data.update(player_ref.get_dict())
             self._csv_dictwriter.writerow(player_data)
-            self._player_complete_notifier.increment()
+            self._player_complete_notifier.complete()

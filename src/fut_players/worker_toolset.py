@@ -1,6 +1,5 @@
 from threading import Lock
-from utils.proxy_pool import ProxyPool
-from utils.proxy_servers import get_proxy_servers_from_file
+from utils.proxy_servers import get_proxy_servers_from_file, ProxyPool
 import config
 
 

@@ -3,7 +3,7 @@ from futwiz.players_page_generator import PlayersPageUrlGenerator
 from concurrent.futures import ThreadPoolExecutor
 from futwiz.players_page_parser import PlayersPageParser
 from utils.get_requests import GetRequest, ErrorCode
-from fut_players.worker.worker_toolset import WorkerToolset
+from fut_players.worker_toolset import WorkerToolset
 import asyncio
 import config
 
@@ -17,6 +17,7 @@ class Worker:
         page_url = toolset.get_next_page_url()
         get_request = GetRequest(toolset.proxies)
         get_request.no_retries = config.MAX_RETRIES
+        get_request.delay = config.DELAY_BETWEEN_TO_RETRY
         get_request.send(page_url, toolset.use_proxy())
         players_page = PlayersPageParser(get_request.get_page_html_text())
         players = players_page.get_players_ref_list()
@@ -26,7 +27,14 @@ class Worker:
             if get_request.error_code == ErrorCode.HTTP_NOT_FOUND:
                 print(get_request.error_msg)
                 continue
-            player.set_page_source(get_request.get_page_html_text())
+            elif get_request.get_page_html_text() is None:
+                print(
+                    f"""Failed to get source for player: {player.href}
+                        Error code: {get_request.error_code}
+                        Error msg: {get_request.error_msg}"""
+                      )
+                continue
+            player.page_source(get_request.get_page_html_text())
             toolset.add_to_csv_queue(player)
             time.sleep(toolset.get_request_delay())
         del players

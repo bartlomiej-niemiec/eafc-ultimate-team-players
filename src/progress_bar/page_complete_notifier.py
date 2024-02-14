@@ -7,7 +7,7 @@ class PlayerCompleteNotifier:
         self._lock = Lock()
         self._observers = []
 
-    def increment(self):
+    def complete(self):
         self._lock.acquire()
         self._notify_observers()
         self._lock.release()
