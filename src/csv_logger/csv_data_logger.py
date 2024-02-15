@@ -1,6 +1,6 @@
 import time
 from threading import Thread, Event
-from futwiz.player_data_parser import PlayerDataParser, PlayerDataTemplateFactory
+from futwiz.player_page import PlayerDataParser, PlayerDataTemplateFactory
 import config
 import csv
 
@@ -34,28 +34,23 @@ class CsvLogger(Thread):
                     self._write_queue_lefts_and_terminate()
                     break
                 if not self.player_ref_queue.empty():
-                    player_ref = self.player_ref_queue.get()
-                    player_data = self._player_data_parser.parse_and_get_player_data(
-                        player_ref.page_source,
-                        config.INCLUDE_PLAYER_STATS
-                    )
-                    player_data.update(player_ref.get_dict())
-                    self._csv_dictwriter.writerow(player_data)
-                    self._player_complete_notifier.complete()
+                    self._write_player_to_csv_and_update_progressbar(self.player_ref_queue.get())
                 time.sleep(LOGGER_THREAD_DELAY)
 
     def _init_csv_writer(self, csvfile):
-        headers = PlayerDataTemplateFactory().create_player_data_dict_template(config.INCLUDE_PLAYER_STATS).keys()
+        headers = PlayerDataTemplateFactory().create(config.INCLUDE_PLAYER_STATS).keys()
         self._csv_dictwriter = csv.DictWriter(csvfile, fieldnames=headers)
         self._csv_dictwriter.writeheader()
 
     def _write_queue_lefts_and_terminate(self):
         while not self.player_ref_queue.empty():
-            player_ref = self.player_ref_queue.get()
-            player_data = self._player_data_parser.parse_and_get_player_data(
-                player_ref.page_source,
-                config.INCLUDE_PLAYER_STATS
-            )
-            player_data.update(player_ref.get_dict())
-            self._csv_dictwriter.writerow(player_data)
-            self._player_complete_notifier.complete()
+            self._write_player_to_csv_and_update_progressbar(self.player_ref_queue.get())
+
+    def _write_player_to_csv_and_update_progressbar(self, player_ref):
+        player_data = self._player_data_parser.parse_and_get_player_data(
+            player_ref.page_source,
+            config.INCLUDE_PLAYER_STATS
+        )
+        player_data.update(player_ref.get_dict())
+        self._csv_dictwriter.writerow(player_data)
+        self._player_complete_notifier.complete()

@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class PlayerCompleteObserver(ABC):
+class PlayerSaveObserver(ABC):
 
     @abstractmethod
     def update(self):

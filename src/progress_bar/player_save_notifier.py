@@ -1,7 +1,7 @@
 from threading import Lock
 
 
-class PlayerCompleteNotifier:
+class PlayerSaveNotifier:
 
     def __init__(self):
         self._lock = Lock()

@@ -1,10 +1,10 @@
 import futwiz.constants as FutwizConstants
 from bs4 import BeautifulSoup
 from src.utils.constants import SOUP_HTML_PARSER, DIV_TAG
-from futwiz.common_card_version_checker import get_version
+from futwiz.utils import get_version
 
 
-class PlayerDataKeys:
+class GeneralPlayerData:
     Name = "Name"
     Version = "Version"
     Club = "Club"
@@ -34,7 +34,7 @@ class PlayerDataKeys:
         }
 
 
-class CommonPosStatsDataKeys:
+class CommonPosStats:
     PAC = "PAC"
     AcceleRATE = "AcceleRATE"
     Acceleration = "Acceleration"
@@ -81,7 +81,7 @@ class CommonPosStatsDataKeys:
         }
 
 
-class GkPosDataKeys:
+class GkPosStats:
     DIV = "DIV"
     GKDiving = "GK. Diving"
     REF = "REF"
@@ -104,11 +104,11 @@ class GkPosDataKeys:
 class PlayerDataTemplateFactory:
 
     @classmethod
-    def create_player_data_dict_template(cls, with_stats):
-        template_dict = PlayerDataKeys.get_dict_template()
+    def create(cls, with_stats):
+        template_dict = GeneralPlayerData.get_dict_template()
         if with_stats:
-            template_dict.update(CommonPosStatsDataKeys.get_dict_template())
-            template_dict.update(GkPosDataKeys.get_dict_template())
+            template_dict.update(CommonPosStats.get_dict_template())
+            template_dict.update(GkPosStats.get_dict_template())
 
         return template_dict
 
@@ -121,7 +121,7 @@ class PlayerDataParser:
         self._player_data_dict = None
 
     def parse_and_get_player_data(self, player_page_source, with_players_stats=False):
-        self._player_data_dict = PlayerDataTemplateFactory().create_player_data_dict_template(with_players_stats)
+        self._player_data_dict = PlayerDataTemplateFactory().create(with_players_stats)
         self._soup = BeautifulSoup(player_page_source, SOUP_HTML_PARSER)
         self._parse_common_data()
         if with_players_stats:
@@ -153,29 +153,29 @@ class PlayerDataParser:
     def _fetch_player_price(self):
         price_dive = self._soup.find(DIV_TAG, class_=FutwizConstants.DIV_PLAYER_MARKET_VALUE)
         price = int(price_dive.contents[self._CONTENT_INDEX].replace(',', ''))
-        self._player_data_dict[PlayerDataKeys.Price] = price
+        self._player_data_dict[GeneralPlayerData.Price] = price
 
     def _fetch_player_overall_rating(self):
         player_overall_rating_div = self._soup.find(DIV_TAG, class_=FutwizConstants.DIV_PLAYER_OVERALL_RATING)
         player_overall_rating = int(player_overall_rating_div.contents[self._CONTENT_INDEX])
-        self._player_data_dict[PlayerDataKeys.OverallRating] = player_overall_rating
+        self._player_data_dict[GeneralPlayerData.OverallRating] = player_overall_rating
 
     def _fetch_player_alt_position(self):
-        if not self._player_data_dict.get(PlayerDataKeys.AltPos):
+        if not self._player_data_dict.get(GeneralPlayerData.AltPos):
             player_alt_position_div = self._soup.find(DIV_TAG, class_=FutwizConstants.DIV_PLAYER_ALT_POSITION)
             player_alt_position = player_alt_position_div.contents[0] if player_alt_position_div else "None"
-            self._player_data_dict[PlayerDataKeys.AltPos] = player_alt_position
+            self._player_data_dict[GeneralPlayerData.AltPos] = player_alt_position
 
     def _fetch_player_position(self):
         player_position_div = self._soup.find(DIV_TAG, class_=FutwizConstants.DIV_PLAYER_POSITION)
         player_position = player_position_div.contents[self._CONTENT_INDEX]
-        self._player_data_dict[PlayerDataKeys.Position] = player_position
+        self._player_data_dict[GeneralPlayerData.Position] = player_position
 
     def _fetch_player_game_stats(self):
 
         player_stats_in_games = self._soup.find(DIV_TAG, class_=FutwizConstants.DIV_PLAYERS_ALL_STATS_IN_GAMES)
         player_stats_in_games_text = [element for element in player_stats_in_games.text.split('\n') if element]
-        playstyle_info_start_index = player_stats_in_games_text.index(CommonPosStatsDataKeys.PlayStylesPlus)
+        playstyle_info_start_index = player_stats_in_games_text.index(CommonPosStats.PlayStylesPlus)
         self._fetch_stats_of_player(player_stats_in_games_text, playstyle_info_start_index)
         self._fetch_player_playstyles(player_stats_in_games_text, playstyle_info_start_index)
 
@@ -186,22 +186,22 @@ class PlayerDataParser:
                 _ = int(player_stats_in_games_text[i + 1])
                 player_stats_in_games_pairs[player_stats_in_games_text[i]] = player_stats_in_games_text[i + 1]
             except ValueError:
-                if player_stats_in_games_text[i] == CommonPosStatsDataKeys.AcceleRATE:
+                if player_stats_in_games_text[i] == CommonPosStats.AcceleRATE:
                     player_stats_in_games_pairs[player_stats_in_games_text[i]] = player_stats_in_games_text[i + 1]
                 continue
         self._player_data_dict.update(player_stats_in_games_pairs)
 
     def _fetch_player_playstyles(self, player_stats_in_games_text, playstyle_info_start_index):
-        playstyle_map = {CommonPosStatsDataKeys.PlayStylesPlus: "", CommonPosStatsDataKeys.PlayStyles: ""}
+        playstyle_map = {CommonPosStats.PlayStylesPlus: "", CommonPosStats.PlayStyles: ""}
         i = 0
         for i in range(playstyle_info_start_index + 1, len(player_stats_in_games_text) - 1, 2):
             if "no PlayStyles+" in player_stats_in_games_text[i] or "no PlayStyles+" in player_stats_in_games_text[
                 i + 1]:
                 i += 1
                 break
-            elif (player_stats_in_games_text[i] != CommonPosStatsDataKeys.PlayStyles and \
-                  player_stats_in_games_text[i + 1] != CommonPosStatsDataKeys.PlayStyles):
-                playstyle_map[CommonPosStatsDataKeys.PlayStylesPlus] += player_stats_in_games_text[i] + ", "
+            elif (player_stats_in_games_text[i] != CommonPosStats.PlayStyles and \
+                  player_stats_in_games_text[i + 1] != CommonPosStats.PlayStyles):
+                playstyle_map[CommonPosStats.PlayStylesPlus] += player_stats_in_games_text[i] + ", "
             else:
                 break
 
@@ -209,7 +209,7 @@ class PlayerDataParser:
             if "no PlayStyles" in player_stats_in_games_text[i]:
                 break
             else:
-                playstyle_map[CommonPosStatsDataKeys.PlayStyles] += player_stats_in_games_text[i] + ", "
+                playstyle_map[CommonPosStats.PlayStyles] += player_stats_in_games_text[i] + ", "
 
         self._player_data_dict.update(playstyle_map)
 
@@ -217,9 +217,9 @@ class PlayerDataParser:
         return filter(_is_not_str_instance, player_details_content)
 
     def _add_card_version_if_not_special(self):
-        player_card_version = self._player_data_dict.get(PlayerDataKeys.Version)
+        player_card_version = self._player_data_dict.get(GeneralPlayerData.Version)
         if not player_card_version:
-            self._player_data_dict[PlayerDataKeys.Version] = get_version(self._soup)
+            self._player_data_dict[GeneralPlayerData.Version] = get_version(self._soup)
 
 
 def _is_not_str_instance(object):

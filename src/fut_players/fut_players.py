@@ -1,9 +1,9 @@
 from fut_players.worker import Supervisor
-from csv_logger.csvlogger import CsvLogger
-from progress_bar.page_complete_notifier import PlayerCompleteNotifier
+from csv_logger.csv_data_logger import CsvLogger
+from progress_bar.player_save_notifier import PlayerSaveNotifier
 from progress_bar.progress_bar import FutCompleteProgressBar
 from utils.thread_safe_queue import ThreadSafeQueue
-from futwiz.last_page_checker import PlayersLastPage
+from futwiz.players_page import PlayersLastPage
 from futwiz.constants import NO_PLAYERS_PER_PAGE
 
 
@@ -15,12 +15,12 @@ class FutPlayers:
         self._logging_queue = ThreadSafeQueue()
         self._no_players_in_last_page = None
         self._progress_bar = None
-        self._page_complete_notifier = None
+        self._player_save_notifier = None
         self._supervisor = None
 
     def run(self):
         self._init()
-        logger = CsvLogger(self._logging_queue, self._page_complete_notifier)
+        logger = CsvLogger(self._logging_queue, self._player_save_notifier)
         logger.start()
         self._supervisor.start()
         logger.stop()
@@ -49,8 +49,8 @@ class FutPlayers:
                                                     no_players_in_last_page=self._no_players_in_last_page)
 
     def _init_player_progress_notification(self):
-        self._page_complete_notifier = PlayerCompleteNotifier()
-        self._page_complete_notifier.register_observer(self._progress_bar)
+        self._player_save_notifier = PlayerSaveNotifier()
+        self._player_save_notifier.register_observer(self._progress_bar)
 
     def _appoint_supervisor(self):
         self._supervisor = Supervisor(

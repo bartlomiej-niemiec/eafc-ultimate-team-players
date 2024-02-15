@@ -1,12 +1,12 @@
 import tqdm
-from progress_bar.page_complete_observer import PlayerCompleteObserver
+from progress_bar.player_save_observer import PlayerSaveObserver
 from futwiz.constants import NO_PLAYERS_PER_PAGE
 
 BAR_FORMAT = "{l_bar}{bar} [players: {n_fmt}/{total_fmt} time spent: {elapsed}]"
 BAR_GREEN_COLOUR = 'green'
 
 
-class FutCompleteProgressBar(PlayerCompleteObserver):
+class FutCompleteProgressBar(PlayerSaveObserver):
 
     def __init__(self, start_page_no, end_page_no, no_players_in_last_page):
         self._increment_value = 1
