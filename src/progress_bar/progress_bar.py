@@ -6,11 +6,11 @@ BAR_FORMAT = "{l_bar}{bar} [players: {n_fmt}/{total_fmt} time spent: {elapsed}]"
 BAR_GREEN_COLOUR = 'green'
 
 
-class FutCompleteProgressBar(PlayerSaveObserver):
+class PlayersCompleteProgressBar(PlayerSaveObserver):
 
     def __init__(self, start_page_no, end_page_no, no_players_in_last_page):
         self._increment_value = 1
-        total_players = self._calculate_no_players_to_get(
+        total_players = self._calculate_no_players_to_save(
             start_page_no,
             end_page_no,
             no_players_in_last_page
@@ -20,7 +20,7 @@ class FutCompleteProgressBar(PlayerSaveObserver):
     def update(self):
         self._progressbar.update(self._increment_value)
 
-    def _calculate_no_players_to_get(self, start_page_no, end_page_no, no_players_in_last_page):
+    def _calculate_no_players_to_save(self, start_page_no, end_page_no, no_players_in_last_page):
         if start_page_no == end_page_no:
             no_iterations = no_players_in_last_page
         else:

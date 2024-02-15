@@ -1,7 +1,7 @@
 from fut_players.worker import Supervisor
 from csv_logger.csv_data_logger import CsvLogger
 from progress_bar.player_save_notifier import PlayerSaveNotifier
-from progress_bar.progress_bar import FutCompleteProgressBar
+from progress_bar.progress_bar import PlayersCompleteProgressBar
 from utils.thread_safe_queue import ThreadSafeQueue
 from futwiz.players_page import PlayersLastPage
 from futwiz.constants import NO_PLAYERS_PER_PAGE
@@ -44,9 +44,9 @@ class FutPlayers:
             self._no_players_in_last_page = futwiz_last_page.get_no_players()
 
     def _init_progress_bar(self):
-        self._progress_bar = FutCompleteProgressBar(start_page_no=self.start_page_number,
-                                                    end_page_no=self.last_page_number,
-                                                    no_players_in_last_page=self._no_players_in_last_page)
+        self._progress_bar = PlayersCompleteProgressBar(start_page_no=self.start_page_number,
+                                                        end_page_no=self.last_page_number,
+                                                        no_players_in_last_page=self._no_players_in_last_page)
 
     def _init_player_progress_notification(self):
         self._player_save_notifier = PlayerSaveNotifier()
