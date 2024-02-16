@@ -34,14 +34,12 @@ class FutPlayers:
     def _get_last_players_page(self):
         futwiz_last_page = PlayersLastPage()
         futwiz_last_page_number = futwiz_last_page.get_page_number()
+        self._no_players_in_last_page = futwiz_last_page.get_no_players()
         if self.last_page_number:
             if self.last_page_number != futwiz_last_page_number:
                 self._no_players_in_last_page = NO_PLAYERS_PER_PAGE
-            else:
-                self._no_players_in_last_page = futwiz_last_page.get_no_players()
         else:
             self.last_page_number = futwiz_last_page_number
-            self._no_players_in_last_page = futwiz_last_page.get_no_players()
 
     def _init_progress_bar(self):
         self._progress_bar = PlayersCompleteProgressBar(start_page_no=self.start_page_number,
@@ -58,5 +56,3 @@ class FutPlayers:
             self.start_page_number,
             self.last_page_number
         )
-
-

@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 from futwiz.constants import FUTWIZ_BASE_URL, A_PLAYERS_LIST
 from futwiz.player_page import GeneralPlayerData
 from utils.constants import SOUP_HTML_PARSER, A_TAG
-from utils.get_request import GetRequest
+from utils.get_request import HttpGetRequestFactory
 
 
 class PlayersPageParser:
@@ -62,14 +62,16 @@ class PlayersLastPage:
         self.page_url_generator = PlayersPageUrlGenerator(self._PAGE_START)
         self.last_page_no = None
         self._number_of_players_in_page = None
-        self._get_request = GetRequest(None, 3)
+        self._get_request = HttpGetRequestFactory.create(None, 3)
 
     def get_page_number(self):
-        while _ := PlayersPageParser(self._get_request.send(self.page_url_generator.get_page_url(), False)).get_players_ref_list():
+        while _ := PlayersPageParser(self._get_request.get(self.page_url_generator.get_page_url())).get_players_ref_list():
             self._number_of_players_in_page = len(_)
             self.page_url_generator.next_page()
-            self._get_request.send(self.page_url_generator.get_page_url(), False)
+            self._get_request.get(self.page_url_generator.get_page_url())
         return self.page_url_generator.get_page_number() - 1
 
     def get_no_players(self):
+        if self._number_of_players_in_page is None:
+            self.get_page_number()
         return self._number_of_players_in_page

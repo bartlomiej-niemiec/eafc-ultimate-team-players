@@ -1,76 +1,111 @@
 import time
+from abc import ABC, abstractmethod
 import requests
-from utils.proxy_servers import ProxyPool
 from enum import Enum
 
-DEFAULT_REQUEST_DELAY = 2.5
+
+class HttpGetRequestFactory:
+
+    @classmethod
+    def create(cls, proxy_pool, max_retries):
+        get_request = None
+        if proxy_pool:
+            get_request = RetryDecorator(ErrorHandlerDecorator(ProxyPoolRequest(proxy_pool)), max_retries)
+        else:
+            get_request = RetryDecorator(ErrorHandlerDecorator(StandardRequest()), max_retries)
+        return get_request
 
 
-class GetRequest:
+class HttpGetRequest(ABC):
+    _DEFAULT_DELAY = 3
+    _REQUEST_SUCCESS = 200
+    def __init__(self):
+        self._error_code = None
 
-    def __init__(self, proxy_pool: ProxyPool, max_retries, delay_to_retry=DEFAULT_REQUEST_DELAY):
-        self.error_code = None
+    @abstractmethod
+    def get(self, page_url, delay_in_s=None):
+        pass
+
+    def get_error_code(self):
+        return self._error_code
+
+
+class ProxyPoolRequest(HttpGetRequest):
+
+    def __init__(self, proxy_pool):
+        super().__init__()
         self._proxy_pool = proxy_pool
-        self._delay_to_retry = delay_to_retry
-        self._max_retries = max_retries
-        self._html_text = None
 
-    @property
-    def delay_to_retry(self):
-        return self._delay_to_retry
+    def get(self, page_rul, delay_in_s=None):
+        if delay_in_s:
+            time.sleep(delay_in_s)
+        proxy_servers = self._proxy_pool.alloc()
+        response = requests.get(page_rul, proxies=proxy_servers)
+        self._error_code = response.status_code
+        self._proxy_pool.dealloc(proxy_servers)
+        return response
 
-    @delay_to_retry.setter
-    def delay_to_retry(self, delay_in_s):
-        self._delay_to_retry = delay_in_s
 
-    @property
-    def max_retries(self):
-        return self._max_retries
+class StandardRequest(HttpGetRequest):
 
-    @max_retries.setter
-    def max_retries(self, no_retries):
-        self._max_retries = no_retries
+    def __init__(self):
+        super().__init__()
 
-    def send(self, url,  user_proxy_server=False):
-        self._clear_state()
-        self._get_request_with_retries(url, user_proxy_server)
-        return self._html_text if not self.error_code else None
+    def get(self, page_rul, delay_in_s=None):
+        if delay_in_s:
+            time.sleep(delay_in_s)
+        response = requests.get(page_rul)
+        self._error_code = response.status_code
+        return response
 
-    def _clear_state(self):
-        self._html_text = None
-        self.error_code = 0
 
-    def _get_request_with_retries(self, url, user_proxy_server=False):
-        retries_left = self._max_retries
-        proxy_server = None
-        while retries_left:
-            if retries_left != self._max_retries:
-                time.sleep(self._delay_to_retry)
-            try:
-                proxy_server = None
-                if user_proxy_server:
-                    proxy_server = self._proxy_pool.alloc()
-                response = requests.get(url, proxies=proxy_server)
-                if proxy_server:
-                    self._proxy_pool.dealloc(proxy_server)
-                response.raise_for_status()
-                source = response.text
-                self._html_text = source
-                break
-            except requests.exceptions.HTTPError:
-                status_code = response.status_code
-                if status_code == ErrorCode.HTTP_NOT_FOUND:
-                    self.error_code = ErrorCode.HTTP_NOT_FOUND
+class ErrorHandlerDecorator(HttpGetRequest):
+
+    def __init__(self, http_request):
+        super().__init__()
+        self._http_request = http_request
+
+    def get(self, page_rul, delay_in_s=None):
+        self.error_code = None
+        response = self._http_request.get(page_rul, delay_in_s)
+        try:
+            response.raise_for_status()
+        except requests.exceptions.HTTPError:
+            self.error_code = response.status_code
+        finally:
+            return response
+
+
+class RetryDecorator(HttpGetRequest):
+
+    def __init__(self, http_request: ErrorHandlerDecorator, max_retries=0):
+        super().__init__()
+        self._http_request = http_request
+        self.max_retries = max_retries
+
+    def get(self, page_rul, delay_in_s=None):
+        no_left_retries = self.max_retries
+        delay = delay_in_s
+        while True:
+            if delay is None and no_left_retries != self.max_retries:
+                delay = self._DEFAULT_DELAY
+            response = self._http_request.get(page_rul, delay)
+            if self._http_request.error_code:
+                if self._http_request.error_code == ErrorCode.HTTP_NOT_FOUND:
+                    self._error_code = ErrorCode.HTTP_NOT_FOUND
                     break
-                else:
-                    if retries_left == 0:
-                        self.error_code = ErrorCode.MAX_RETRIES
-                    retries_left -= 1
-            finally:
-                if proxy_server:
-                    self._proxy_pool.dealloc(proxy_server)
+                elif self._http_request.error_code == ErrorCode.TO_MANY_REQUEST:
+                    no_left_retries -= 1
+                    self._error_code = ErrorCode.TO_MANY_REQUEST
+                    if no_left_retries == 0:
+                        break
+            elif self._http_request.error_code is None or self._http_request.error_code == self._REQUEST_SUCCESS:
+                break
+        return response.text
 
 
 class ErrorCode(Enum):
+    NO_ERROR = None
     MAX_RETRIES = 1
     HTTP_NOT_FOUND = 404
+    TO_MANY_REQUEST = 429

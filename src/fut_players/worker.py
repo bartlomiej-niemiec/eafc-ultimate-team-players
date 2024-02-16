@@ -2,7 +2,7 @@ import time
 from threading import Lock
 from concurrent.futures import ThreadPoolExecutor
 from futwiz.players_page import PlayersPageParser, PlayersPageUrlGenerator
-from utils.get_request import GetRequest, ErrorCode
+from utils.get_request import HttpGetRequestFactory, ErrorCode
 import asyncio
 import config
 from utils.proxy_servers import ProxyPool, get_proxy_servers_from_file
@@ -12,18 +12,18 @@ class Worker:
 
     @classmethod
     def work(cls, toolset):
-        page_url = toolset.get_next_page_url()
-        get_request = GetRequest(toolset.proxies, config.MAX_RETRIES, config.DELAY_BETWEEN_TO_RETRY)
-        page_context = get_request.send(page_url, toolset.use_proxy())
-        players_page = PlayersPageParser(page_context)
-        players = players_page.get_players_ref_list()
-        del players_page
-        for player in players:
-            page_context = get_request.send(player.href, toolset.use_proxy())
-            if get_request.error_code == ErrorCode.HTTP_NOT_FOUND:
+        players_page_url = toolset.get_next_page_url()
+        get_request = HttpGetRequestFactory.create(toolset.proxies if toolset.use_proxy() else None, config.MAX_RETRIES)
+        players_page_context = get_request.get(players_page_url)
+        players_page_parser = PlayersPageParser(players_page_context)
+        players = players_page_parser.get_players_ref_list()
+        del players_page_parser
+        for player_ref in players:
+            player_page_context = get_request.get(player_ref.href)
+            if get_request.get_error_code() == ErrorCode.HTTP_NOT_FOUND:
                 continue
-            player.page_source = page_context
-            toolset.add_to_csv_queue(player)
+            player_ref.page_source = player_page_context
+            toolset.add_to_csv_queue(player_ref)
             time.sleep(toolset.get_request_delay())
         del players
 
