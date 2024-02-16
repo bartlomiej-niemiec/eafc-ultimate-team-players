@@ -13,14 +13,14 @@ class Worker:
     @classmethod
     def work(cls, toolset):
         players_page_url = toolset.get_next_page_url()
-        get_request = HttpGetRequestFactory.create(toolset.proxies if toolset.use_proxy() else None, config.MAX_RETRIES)
-        players_page_context = get_request.get(players_page_url)
+        http_request = HttpGetRequestFactory.create(toolset.proxies if toolset.use_proxy() else None, config.MAX_RETRIES)
+        players_page_context = http_request.get(players_page_url)
         players_page_parser = PlayersPageParser(players_page_context)
         players = players_page_parser.get_players_ref_list()
         del players_page_parser
         for player_ref in players:
-            player_page_context = get_request.get(player_ref.href)
-            if get_request.get_error_code() == ErrorCode.HTTP_NOT_FOUND:
+            player_page_context = http_request.get(player_ref.href)
+            if http_request.get_error_code() == ErrorCode.HTTP_NOT_FOUND:
                 continue
             player_ref.page_source = player_page_context
             toolset.add_to_csv_queue(player_ref)

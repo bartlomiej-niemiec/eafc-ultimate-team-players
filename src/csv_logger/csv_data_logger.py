@@ -4,7 +4,7 @@ from futwiz.player_page import PlayerDataParser, PlayerDataTemplateFactory
 import config
 import csv
 
-LOGGER_THREAD_DELAY = config.LOGGING_THREAD_DELAY
+LOGGER_THREAD_DELAY = config.LOGGING_THREAD_DELAY_S
 FILES_NAME = config.CSV_FILE_NAME
 
 

@@ -19,6 +19,12 @@ class PlayersPageParser:
         return self._players
 
 
+class PlayerRefFactory:
+    @classmethod
+    def create_from_a_tag(cls, a_tag):
+        return PlayerRef(a_tag.attrs['href'])
+
+
 class PlayerRef:
 
     def __init__(self, href):
@@ -31,12 +37,6 @@ class PlayerRef:
             GeneralPlayerData.ID: self.href.split('/')[LAST_ELEMENT],
             GeneralPlayerData.FutwizLink: self.href
         }
-
-
-class PlayerRefFactory:
-    @classmethod
-    def create_from_a_tag(cls, a_tag):
-        return PlayerRef(a_tag.attrs['href'])
 
 
 class PlayersPageUrlGenerator:
@@ -65,7 +65,8 @@ class PlayersLastPage:
         self._get_request = HttpGetRequestFactory.create(None, 3)
 
     def get_page_number(self):
-        while _ := PlayersPageParser(self._get_request.get(self.page_url_generator.get_page_url())).get_players_ref_list():
+        while _ := PlayersPageParser(
+                self._get_request.get(self.page_url_generator.get_page_url())).get_players_ref_list():
             self._number_of_players_in_page = len(_)
             self.page_url_generator.next_page()
             self._get_request.get(self.page_url_generator.get_page_url())
