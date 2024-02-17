@@ -1,5 +1,5 @@
 import time
-from threading import Lock
+from threading import Lock, Event
 from futwiz.players_page.players_page_parser import PlayerPageParserFactory
 from http import HTTPStatus
 from utils.get_requests.get_request_factory import HttpGetRequestFactory
@@ -9,6 +9,24 @@ from fut_players.fut_players_mode import FutPlayersMode
 from futwiz.players_page.util import PlayersPageType
 
 
+class PageVisitorWithStopEvent:
+
+    @classmethod
+    def work(cls, toolset, stop: Event):
+        players_page_url = toolset.get_next_page_url()
+        http_request = HttpGetRequestFactory.create(toolset.proxies if toolset.use_proxy() else None,
+                                                    config.MAX_RETRIES)
+        players_list = _get_players_list_from_page(players_page_url, http_request)
+        for player_ref in players_list:
+            if stop.is_set():
+                break
+            _visit_page_and_set_page_source(player_ref, http_request)
+            if http_request.get_status_code() == HTTPStatus.NOT_FOUND:
+                continue
+            toolset.add_to_csv_queue(player_ref)
+            time.sleep(toolset.get_request_delay())
+
+
 class PageVisitor:
 
     @classmethod
@@ -16,21 +34,27 @@ class PageVisitor:
         players_page_url = toolset.get_next_page_url()
         http_request = HttpGetRequestFactory.create(toolset.proxies if toolset.use_proxy() else None,
                                                     config.MAX_RETRIES)
-        players_page_context = http_request.get(players_page_url)
-        players_page_type = PlayersPageType.AllPlayers
-        if config.FUT_PLAYERS_MODE == FutPlayersMode.LatestPlayerUpdate:
-            players_page_type = PlayersPageType.LatestAddedPlayers
-        players_page_parser = PlayerPageParserFactory.create(players_page_context, players_page_type)
-        players = players_page_parser.get_players_ref_list()
-        del players_page_parser
-        for player_ref in players:
-            player_page_context = http_request.get(player_ref.href)
+        players_list = _get_players_list_from_page(players_page_url, http_request)
+        for player_ref in players_list:
+            _visit_page_and_set_page_source(player_ref, http_request)
             if http_request.get_status_code() == HTTPStatus.NOT_FOUND:
                 continue
-            player_ref.page_source = player_page_context
             toolset.add_to_csv_queue(player_ref)
             time.sleep(toolset.get_request_delay())
-        del players
+
+
+def _get_players_list_from_page(page_url, http_get_request):
+    players_page_context = http_get_request.get(page_url)
+    players_page_type = PlayersPageType.AllPlayers
+    if config.FUT_PLAYERS_MODE == FutPlayersMode.LatestPlayerUpdate:
+        players_page_type = PlayersPageType.LatestAddedPlayers
+    players_page_parser = PlayerPageParserFactory.create(players_page_context, players_page_type)
+    return players_page_parser.get_players_ref_list()
+
+
+def _visit_page_and_set_page_source(player_ref, http_get_request):
+    player_page_context = http_get_request.get(player_ref.href)
+    player_ref.page_source = player_page_context
 
 
 class Toolset:

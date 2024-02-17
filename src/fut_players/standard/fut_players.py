@@ -4,7 +4,7 @@ from futwiz.players_page.last_players_page import LastPlayersPage
 from futwiz.constants import NO_PLAYERS_PER_PAGE
 
 from progress_bar.player_save_notifier import PlayerSaveNotifier
-from progress_bar.progress_bar import PlayersCompleteProgressBar
+from progress_bar.all_players_progress_bar import PlayersCompleteProgressBar
 from utils.thread_safe_queue import ThreadSafeQueue
 
 

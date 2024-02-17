@@ -20,8 +20,8 @@ CSV_FILE_NAME = "fut_players.csv"
 
 # GET ALL PLAYERS CONFIG
 # PROXY SERVERS
-USE_PROXY = False
-PROXY_SERVERS_FILE_PATH = r""
+USE_PROXY = True
+PROXY_SERVERS_FILE_PATH = r"C:\Users\bniem\Downloads\proxyscrape_premium_http_proxies.txt"
 
 # THREADS
 NO_WORKING_THREADS = 10
