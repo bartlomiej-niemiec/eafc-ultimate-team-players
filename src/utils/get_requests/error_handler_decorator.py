@@ -2,6 +2,7 @@ import requests
 from utils.get_requests.get_request_if import HttpGetRequest
 from http import HTTPStatus
 
+
 class ErrorHandlerDecorator(HttpGetRequest):
 
     def __init__(self, http_request):

@@ -4,7 +4,7 @@ from futwiz.players_page.last_players_page import LastPlayersPage
 from futwiz.constants import NO_PLAYERS_PER_PAGE
 
 from progress_bar.player_save_notifier import PlayerSaveNotifier
-from progress_bar.all_players_progress_bar import PlayersCompleteProgressBar
+from progress_bar.players_complete_progressbar import PlayersCompleteProgressBar
 from utils.thread_safe_queue import ThreadSafeQueue
 
 
@@ -18,19 +18,23 @@ class FutPlayers:
         self._progress_bar = None
         self._player_save_notifier = None
         self._supervisor = None
+        self._logging_thread = None
 
     def run(self):
         self._init()
-        logger = CsvLogger(self._logging_queue, self._player_save_notifier)
-        logger.start()
+        self._spawn_logging_thread()
+        self._logging_thread.start()
         self._supervisor.start()
-        logger.stop()
+        self._logging_thread.stop()
 
     def _init(self):
         self._get_last_players_page()
         self._init_progress_bar()
         self._init_player_progress_notification()
         self._appoint_supervisor()
+
+    def _spawn_logging_thread(self):
+        self._logging_thread = CsvLogger(self._logging_queue, self._player_save_notifier)
 
     def _get_last_players_page(self):
         futwiz_last_page = LastPlayersPage()
@@ -43,9 +47,12 @@ class FutPlayers:
             self.last_page_number = futwiz_last_page_number
 
     def _init_progress_bar(self):
-        self._progress_bar = PlayersCompleteProgressBar(start_page_no=self.start_page_number,
-                                                        end_page_no=self.last_page_number,
-                                                        no_players_in_last_page=self._no_players_in_last_page)
+        total_iterations = PlayersCompleteProgressBar.calculate_no_players_to_save(
+            self.start_page_number,
+            self.last_page_number,
+            self._no_players_in_last_page
+        )
+        self._progress_bar = PlayersCompleteProgressBar(total_iterations)
 
     def _init_player_progress_notification(self):
         self._player_save_notifier = PlayerSaveNotifier()

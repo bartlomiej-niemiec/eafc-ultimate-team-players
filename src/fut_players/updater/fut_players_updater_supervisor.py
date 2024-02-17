@@ -6,13 +6,13 @@ from futwiz.players_page.util import PlayersPageType
 from threading import Thread, Event
 
 
-class FutPlayersUpdaterSupervisor():
+class FutPlayersUpdaterSupervisor:
 
     def __init__(self, csv_logging_queue, no_more_to_update: Event, ):
         super(FutPlayersUpdaterSupervisor, self).__init__()
         self._toolset = Toolset(
             csv_logging_queue,
-            PlayerPageUrlFactory.create(None, PlayersPageType.LatestAddedPlayers),
+            PlayerPageUrlFactory.create(0, PlayersPageType.LatestAddedPlayers),
         )
         self._no_more_to_update = no_more_to_update
         self._stop_event = Event()
