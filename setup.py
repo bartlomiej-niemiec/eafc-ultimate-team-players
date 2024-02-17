@@ -20,13 +20,13 @@ setup(
     url="https://github.com/bartlomiej-niemiec/fut-players",
     packages=find_packages(where="src"),
     install_requires=[
-        'requests',
+        'get_requests',
         'beautifulsoup4',
         'tqdm'
     ],  # add any additional packages that
     # needs to be installed along with your package. Eg: 'caer'
 
-    keywords=['python', 'eafc24', 'futwiz', 'fut', 'csv', 'multithreading'],
+    keywords=['python', 'eafc24', 'futwiz', 'fut', 'file_logging', 'multithreading'],
     classifiers=[
         "License :: OSI Approved :: MIT License",
         "Development Status :: 3 - Alpha",

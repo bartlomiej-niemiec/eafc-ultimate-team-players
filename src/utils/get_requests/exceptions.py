@@ -1,0 +1,2 @@
+class HTTPGetRequestFailed(Exception):
+    pass

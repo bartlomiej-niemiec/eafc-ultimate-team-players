@@ -1,4 +1,6 @@
-from fut_players.fut_players import FutPlayers
+from fut_players.fut_players_runner import FutPlayersRunner
+from fut_players.fut_players_mode import FutPlayersMode
 
 if __name__ == "__main__":
-    FutPlayers().run()
+    fut_players = FutPlayersRunner.create(FutPlayersMode.LatestPlayerUpdate)
+    fut_players.run()
