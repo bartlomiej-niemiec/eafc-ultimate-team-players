@@ -1,5 +1,4 @@
 import time
-import config
 import pandas as pd
 import csv
 

@@ -1,4 +1,3 @@
-import config
 import csv
 from futwiz.player_page.player_data_template import PlayerDataTemplateFactory
 from futwiz.player_page.player_page_parser import PlayerDataParser
