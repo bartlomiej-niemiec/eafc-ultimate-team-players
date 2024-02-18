@@ -7,7 +7,7 @@ class Config:
      * In LatestPlayerUpdate mode there is 1 working thread and the common config only matter
      * In GetAllPlayers mode there is n working thread and the whole config matter
     """
-    FUT_PLAYERS_MODE = FutPlayersMode.GetAllPlayers
+    FUT_PLAYERS_MODE = FutPlayersMode.LatestPlayerUpdate
 
     # COMMON CONFIG
     # REQUESTS
@@ -23,7 +23,7 @@ class Config:
     # GET ALL PLAYERS CONFIG
     # PROXY SERVERS
     USE_PROXY = True
-    PROXY_SERVERS_FILE_PATH = r"C:\Users\bniem\Downloads\proxyscrape_premium_http_proxies.txt"
+    PROXY_SERVERS_FILE_PATH = r""
 
     # THREADS
     NO_WORKING_THREADS = 10

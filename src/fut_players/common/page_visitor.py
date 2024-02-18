@@ -9,7 +9,7 @@ class PageVisitorWithStopEvent:
     @classmethod
     def work(cls, toolset, stop: Event):
         players_page_url = toolset.get_next_page_url()
-        players_page_context = toolset.http_get_request.get(players_page_url)
+        players_page_context = toolset.http_request.get(players_page_url)
         players_list = _get_players_list_from_page(players_page_context, toolset.get_players_page_type())
         for player_ref in players_list:
             if stop.is_set():

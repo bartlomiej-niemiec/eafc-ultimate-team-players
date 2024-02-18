@@ -40,7 +40,8 @@ class FutPlayersUpdater:
             self._logging_queue,
             self._config.CSV_FILE_NAME,
             self._no_more_to_update,
-            self._player_save_notifier
+            self._player_save_notifier,
+            self._config.DELAY_TO_NEXT_REQUEST_S
         )
 
     def _init(self):

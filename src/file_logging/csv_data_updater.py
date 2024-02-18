@@ -66,4 +66,4 @@ class CsvUpdater(Thread):
             csv_reader = csv.reader(csvfile)
             headers = next(csv_reader)
         first_key = list(CommonPosStats.get_dict_template().keys())[0]
-        return True if first_key in headers else False
+        return True if first_key in headers[0].split(';') else False
