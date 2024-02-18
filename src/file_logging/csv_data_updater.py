@@ -20,7 +20,6 @@ class CsvUpdater(Thread):
         self._stop_event = Event()
         self._player_data_parser = PlayerDataParser()
         self._filepath = filepath
-        self._dtypes = {key: "str" for key in PlayerDataTemplateFactory().create(config.INCLUDE_PLAYER_STATS).keys()}
         self._csv_content = None
         self._player_complete_notifier = player_complete_notifier
         self._with_player_stats = self._is_file_include_player_stats()
@@ -39,17 +38,17 @@ class CsvUpdater(Thread):
                 break
             if not self.player_ref_queue.empty():
                 player_ref = self.player_ref_queue.get()
-                player_in_csv = self.csv_content[GeneralPlayerData.FutwizLink].eq(player_ref.href).any()
+                player_in_csv = self.csv_content[GeneralPlayerData.FutwizLink].eq(player_ref.href.strip()).any()
                 if not player_in_csv:
                     self._parser_player_data_and_save(player_ref)
-                    self._player_complete_notifier.complete()
                 else:
                     self._no_more_to_update.set()
                     break
                 time.sleep(LOGGER_THREAD_DELAY)
 
     def _read_csv_content(self):
-        self.csv_content = pd.read_csv(self._filepath, dtype=self._dtypes)
+        names = [key for key in PlayerDataTemplateFactory().create(self._with_player_stats).keys()]
+        self.csv_content = pd.read_csv(self._filepath, delimiter=';', names=names)
 
     def _parser_player_data_and_save(self, player_ref):
         player_data = self._player_data_parser.parse_and_get_player_data(
@@ -60,11 +59,12 @@ class CsvUpdater(Thread):
         with open(self._filepath, 'a', newline='', encoding="utf-8") as csvfile:
             csv_dictwriter = csv.DictWriter(csvfile, fieldnames=self._headers)
             csv_dictwriter.writerow(player_data)
+        self._player_complete_notifier.complete()
 
     def _is_file_include_player_stats(self):
         HEADERS_ROW = 0
         with open(self._filepath, 'r', newline='', encoding="utf-8") as csvfile:
             csv_reader = csv.reader(csvfile)
-            for row_num, row in enumerate(csv_reader):
-                if row_num == HEADERS_ROW:
-                    return True if CommonPosStats.get_dict_template() in row else False
+            headers = next(csv_reader)
+        first_key = list(CommonPosStats.get_dict_template().keys())[0]
+        return True if first_key in headers else False

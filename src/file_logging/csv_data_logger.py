@@ -39,7 +39,7 @@ class CsvLogger(Thread):
 
     def _init_csv_writer(self, csvfile):
         headers = PlayerDataTemplateFactory().create(config.INCLUDE_PLAYER_STATS).keys()
-        self._csv_dictwriter = csv.DictWriter(csvfile, fieldnames=headers)
+        self._csv_dictwriter = csv.DictWriter(csvfile, fieldnames=headers, delimiter=';')
         self._csv_dictwriter.writeheader()
 
     def _write_queue_lefts_and_terminate(self):
