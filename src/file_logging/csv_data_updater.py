@@ -55,12 +55,11 @@ class CsvUpdater(Thread):
         )
         player_data.update(player_ref.get_dict())
         with open(self._filepath, 'a', newline='', encoding="utf-8") as csvfile:
-            csv_dictwriter = csv.DictWriter(csvfile, fieldnames=self._headers)
+            csv_dictwriter = csv.DictWriter(csvfile, fieldnames=self._headers, delimiter=';')
             csv_dictwriter.writerow(player_data)
         self._player_complete_notifier.complete()
 
     def _is_file_include_player_stats(self):
-        HEADERS_ROW = 0
         with open(self._filepath, 'r', newline='', encoding="utf-8") as csvfile:
             csv_reader = csv.reader(csvfile)
             headers = next(csv_reader)
