@@ -5,7 +5,6 @@ from futwiz.players_page.constants import A_PLAYERS_LIST
 from utils.get_requests.get_request_factory import HttpGetRequestFactory
 
 
-
 class LastPlayersPage:
     _PAGE_START = 733
 

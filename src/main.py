@@ -1,6 +1,6 @@
 from fut_players.fut_players_runner import FutPlayersRunner
-from config import FUT_PLAYERS_MODE
+from config import Config
 
 if __name__ == "__main__":
-    fut_players = FutPlayersRunner.create(FUT_PLAYERS_MODE)
+    fut_players = FutPlayersRunner.create(Config)
     fut_players.run()

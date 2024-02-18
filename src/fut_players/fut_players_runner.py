@@ -6,8 +6,8 @@ from src.fut_players.updater.fut_players_updater import FutPlayersUpdater
 class FutPlayersRunner:
 
     @classmethod
-    def create(cls, mode):
-        if mode == FutPlayersMode.LatestPlayerUpdate:
-            return FutPlayersUpdater()
-        elif mode == FutPlayersMode.GetAllPlayers:
-            return FutPlayers(last_page_number=2)
+    def create(cls, config):
+        if config.FUT_PLAYERS_MODE == FutPlayersMode.LatestPlayerUpdate:
+            return FutPlayersUpdater(config)
+        elif config.FUT_PLAYERS_MODE == FutPlayersMode.GetAllPlayers:
+            return FutPlayers(config)

@@ -1,21 +1,14 @@
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
-
-import config
-from fut_players.common.page_visitor import Toolset, PageVisitor
-from futwiz.players_page.players_page_url_generator import PlayerPageUrlFactory
-from futwiz.players_page.util import PlayersPageType
+from fut_players.common.page_visitor import PageVisitor
 
 
 class FutPlayersSupervisor:
 
-    def __init__(self, csv_logging_queue, start_page_no, last_page_no):
-        self._worker_toolset = Toolset(
-            csv_logging_queue,
-            PlayerPageUrlFactory.create(start_page_no, PlayersPageType.AllPlayers),
-        )
-        self._no_pages_to_work = last_page_no - start_page_no + 1
-        self._no_workers = config.NO_WORKING_THREADS
+    def __init__(self, no_pages, no_threads, toolset):
+        self._worker_toolset = toolset
+        self._no_pages_to_work = no_pages
+        self._no_workers = no_threads
 
     def start(self):
         loop = asyncio.get_event_loop()

@@ -7,15 +7,13 @@ from threading import Thread, Event
 from futwiz.player_page.player_data_template import GeneralPlayerData, PlayerDataTemplateFactory, CommonPosStats
 from futwiz.player_page.player_page_parser import PlayerDataParser
 
-LOGGER_THREAD_DELAY = config.LOGGING_THREAD_DELAY_S
-FILES_NAME = config.CSV_FILE_NAME
-
 
 class CsvUpdater(Thread):
 
-    def __init__(self, player_ref_queue, filepath, no_more_to_update: Event, player_complete_notifier):
+    def __init__(self, player_ref_queue, filepath, no_more_to_update: Event, player_complete_notifier, thread_interval_s):
         super(CsvUpdater, self).__init__()
-        self.player_ref_queue = player_ref_queue
+        self._thread_interval_s = thread_interval_s
+        self._player_ref_queue = player_ref_queue
         self._no_more_to_update = no_more_to_update
         self._stop_event = Event()
         self._player_data_parser = PlayerDataParser()
@@ -36,19 +34,20 @@ class CsvUpdater(Thread):
         while not self._no_more_to_update.is_set():
             if self._stop_event.isSet():
                 break
-            if not self.player_ref_queue.empty():
-                player_ref = self.player_ref_queue.get()
+            if not self._player_ref_queue.empty():
+                player_ref = self._player_ref_queue.get()
                 player_in_csv = self.csv_content[GeneralPlayerData.FutwizLink].eq(player_ref.href.strip()).any()
                 if not player_in_csv:
                     self._parser_player_data_and_save(player_ref)
                 else:
                     self._no_more_to_update.set()
                     break
-                time.sleep(LOGGER_THREAD_DELAY)
+                time.sleep(self._thread_interval_s)
 
     def _read_csv_content(self):
         names = [key for key in PlayerDataTemplateFactory().create(self._with_player_stats).keys()]
-        self.csv_content = pd.read_csv(self._filepath, delimiter=';', names=names)
+        dtypes = {key: str for key in PlayerDataTemplateFactory().create(self._with_player_stats).keys()}
+        self.csv_content = pd.read_csv(self._filepath, delimiter=';', names=names, dtype=dtypes)
 
     def _parser_player_data_and_save(self, player_ref):
         player_data = self._player_data_parser.parse_and_get_player_data(
