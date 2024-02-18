@@ -10,4 +10,4 @@ class FutPlayersRunner:
         if mode == FutPlayersMode.LatestPlayerUpdate:
             return FutPlayersUpdater()
         elif mode == FutPlayersMode.GetAllPlayers:
-            return FutPlayers()
+            return FutPlayers(last_page_number=2)
