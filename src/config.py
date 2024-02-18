@@ -18,7 +18,7 @@ class Config:
     # CSV LOGGING
     INCLUDE_PLAYER_STATS = True
     LOGGING_THREAD_DELAY_S = 0.05
-    CSV_FILE_NAME = "fut_players.csv"
+    CSV_FILE_NAME = "../fut_players.csv"
 
     # GET ALL PLAYERS CONFIG
     # PROXY SERVERS
