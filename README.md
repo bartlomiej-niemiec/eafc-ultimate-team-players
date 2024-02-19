@@ -1,4 +1,4 @@
-# FC24 FUT PLAYERS
+# FC24 Ultimate Team PLAYERS
 
 This repository contains script to automatically fetch FC24 Ultimate Team players cards from [Futwiz](https://www.futwiz.com/en/fc24/) website.
 Player card data include in game stats, market price, playstyles etc. 
