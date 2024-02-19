@@ -1,14 +1,4 @@
-from fut_players.fut_players_mode import FutPlayersMode
-
-
-class Config:
-    # MODE
-    """
-     * In LatestPlayerUpdate mode there is 1 working thread and the common config only matter
-     * In GetAllPlayers mode there is n working thread and the whole config matter
-    """
-    FUT_PLAYERS_MODE = FutPlayersMode.LatestPlayerUpdate
-
+class CommonConfig:
     # COMMON CONFIG
     # REQUESTS
     MAX_RETRIES = 20
@@ -20,6 +10,12 @@ class Config:
     LOGGING_THREAD_DELAY_S = 0.05
     CSV_FILE_NAME = "../fut_players.csv"
 
+
+class LatestPlayerModeConfig(CommonConfig):
+    pass
+
+
+class GetAllPlayersModeConfig(CommonConfig):
     # GET ALL PLAYERS CONFIG
     # PROXY SERVERS
     USE_PROXY = True
