@@ -1,6 +1,8 @@
-# EA FC24 FUT PLAYERS
+# FC24 FUT PLAYERS
 
-Foobar is a Python library for dealing with word pluralization.
+This repository contains script to automatically fetch FC24 Ultimate Team players cards from [Futwiz](https://www.futwiz.com/en/fc24/) website.
+Player card data include in game stats, market price, playstyles etc. 
+
 
 ## Installation
 
@@ -11,27 +13,24 @@ pip install -r requirements.txt
 ```
 
 ## Usage
+Script can be run in two modes:
+* fetch all of the Ultimate Team cards and write them to csv file,
+* write to csv file latest added players and stop at first card that is already in file.
+
+To select which mode you would like to run set it in main.py:
 
 ```python
-import foobar
+from fut_players.fut_players_runner import FutPlayersRunner
+from fut_players.fut_players_mode import FutPlayersMode
 
-# returns 'words'
-foobar.pluralize('word')
+if __name__ == "__main__":
+    fut_players = FutPlayersRunner.create(FutPlayersMode.LatestPlayerUpdate)
+    fut_players.run()
 
-# returns 'geese'
-foobar.pluralize('goose')
-
-# returns 'phenomenon'
-foobar.singularize('phenomena')
 ```
-
-## Contributing
-
-Pull requests are welcome. For major changes, please open an issue first
-to discuss what you would like to change.
-
-Please make sure to update tests as appropriate.
-
-## License
-
-[MIT](https://choosealicense.com/licenses/mit/)
+Each run of script can be configured in **config.py** im term of:
+* using proxy servers (only in first mode - getting all of the players),
+* number of working/scraping threads (only in first mode - getting all of the players),
+* csv filepath,
+* max retries of http get request,
+* time delay to next request\time delay between each retry.

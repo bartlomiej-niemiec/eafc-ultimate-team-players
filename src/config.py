@@ -1,5 +1,4 @@
 class CommonConfig:
-    # COMMON CONFIG
     # REQUESTS
     MAX_RETRIES = 20
     DELAY_TO_REQUESTS_RETRY_S = 3
@@ -16,12 +15,11 @@ class LatestPlayerModeConfig(CommonConfig):
 
 
 class GetAllPlayersModeConfig(CommonConfig):
-    # GET ALL PLAYERS CONFIG
     # PROXY SERVERS
     USE_PROXY = True
     PROXY_SERVERS_FILE_PATH = r""
 
-    # THREADS
+    # THREADS1
     NO_WORKING_THREADS = 10
 
     # PAGES
