@@ -30,8 +30,8 @@ if __name__ == "__main__":
 
 ```
 Each run of script can be configured in **config.py** im term of:
-* using proxy servers (only in first mode - getting all of the players),
-* number of working/scraping threads (only in first mode - getting all of the players),
+* using proxy servers (getting all of the players and price update mode),
+* number of working/scraping threads (getting all of the players and price update mode),
 * csv filepath,
 * max retries of http get request,
 * time delay to next request\time delay between each retry.
