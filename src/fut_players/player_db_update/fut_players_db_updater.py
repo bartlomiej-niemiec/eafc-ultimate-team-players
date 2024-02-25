@@ -1,7 +1,7 @@
 from threading import Event
 
 from fut_players.common.page_visitor import Toolset
-from fut_players.updater.fut_players_updater_supervisor import FutPlayersUpdaterSupervisor
+from fut_players.player_db_update.fut_players_db_updater_supervisor import FutPlayersUpdaterSupervisor
 from file_logging.csv_data_updater import CsvUpdater
 from futwiz.players_page.players_page_url_generator import PlayerPageUrlFactory
 from futwiz.players_page.util import PlayersPageType

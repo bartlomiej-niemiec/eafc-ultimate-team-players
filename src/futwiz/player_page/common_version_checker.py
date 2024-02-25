@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 import futwiz.player_page.constants as PlayerPageConsts
-from utils.constants import DIV_TAG
+from src.utils.constants import DIV_TAG
 
 
 def get_version(soup: BeautifulSoup):
