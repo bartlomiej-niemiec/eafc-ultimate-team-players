@@ -1,15 +1,17 @@
 import time
-import pandas as pd
 import csv
 
 from threading import Thread, Event
-from futwiz.player_page.player_data_template import GeneralPlayerData, PlayerDataTemplateFactory, CommonPosStats
+
+from file_logging.utils import does_file_include_player_stats, get_csv_content
+from futwiz.player_page.player_data_template import GeneralPlayerData, PlayerDataTemplateFactory
 from futwiz.player_page.player_page_parser import PlayerDataParser
 
 
 class CsvUpdater(Thread):
 
-    def __init__(self, player_ref_queue, filepath, no_more_to_update: Event, player_complete_notifier, thread_interval_s):
+    def __init__(self, player_ref_queue, filepath, no_more_to_update: Event, player_complete_notifier,
+                 thread_interval_s):
         super(CsvUpdater, self).__init__()
         self._thread_interval_s = thread_interval_s
         self._player_ref_queue = player_ref_queue
@@ -19,7 +21,7 @@ class CsvUpdater(Thread):
         self._filepath = filepath
         self._csv_content = None
         self._player_complete_notifier = player_complete_notifier
-        self._with_player_stats = self._is_file_include_player_stats()
+        self._with_player_stats = does_file_include_player_stats(filepath)
         self._headers = PlayerDataTemplateFactory().create(self._with_player_stats).keys()
 
     def run(self):
@@ -44,9 +46,7 @@ class CsvUpdater(Thread):
                 time.sleep(self._thread_interval_s)
 
     def _read_csv_content(self):
-        names = [key for key in PlayerDataTemplateFactory().create(self._with_player_stats).keys()]
-        dtypes = {key: str for key in PlayerDataTemplateFactory().create(self._with_player_stats).keys()}
-        self.csv_content = pd.read_csv(self._filepath, delimiter=';', names=names, dtype=dtypes)
+        self.csv_content = get_csv_content(self._filepath)
 
     def _parser_player_data_and_save(self, player_ref):
         player_data = self._player_data_parser.parse_and_get_player_data(
@@ -59,9 +59,4 @@ class CsvUpdater(Thread):
             csv_dictwriter.writerow(player_data)
         self._player_complete_notifier.complete()
 
-    def _is_file_include_player_stats(self):
-        with open(self._filepath, 'r', newline='', encoding="utf-8") as csvfile:
-            csv_reader = csv.reader(csvfile)
-            headers = next(csv_reader)
-        first_key = list(CommonPosStats.get_dict_template().keys())[0]
-        return True if first_key in headers[0].split(';') else False
+

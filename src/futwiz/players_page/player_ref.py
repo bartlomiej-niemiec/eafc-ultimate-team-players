@@ -11,7 +11,10 @@ class PlayerRefFactory:
 class PlayerRef:
 
     def __init__(self, href):
-        self.href = FUTWIZ_BASE_URL + href
+        if FUTWIZ_BASE_URL not in href:
+            self.href = FUTWIZ_BASE_URL + href
+        else:
+            self.href = href
         self.page_source = None
 
     def get_dict(self):

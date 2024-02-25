@@ -10,18 +10,24 @@ class CommonConfig:
     CSV_FILE_NAME = "../fut_players.csv"
 
 
-class LatestPlayerModeConfig(CommonConfig):
-    pass
-
-
-class GetAllPlayersModeConfig(CommonConfig):
+class ProxyServersConfig:
     # PROXY SERVERS
     USE_PROXY = True
-    PROXY_SERVERS_FILE_PATH = r""
+    PROXY_SERVERS_FILE_PATH = r"C:\Users\bniem\Downloads\proxyscrape_premium_http_proxies.txt"
 
     # THREADS1
     NO_WORKING_THREADS = 10
 
+
+class LatestPlayerModeConfig(CommonConfig):
+    pass
+
+
+class PriceUpdateConfig(CommonConfig, ProxyServersConfig):
+    pass
+
+
+class GetAllPlayersModeConfig(CommonConfig, ProxyServersConfig):
     # PAGES
     START_PAGE = 0
-    END_PAGE = None  # None means get all pages
+    END_PAGE = 2  # None means get all pages
