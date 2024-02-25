@@ -13,7 +13,7 @@ class CommonConfig:
 class ProxyServersConfig:
     # PROXY SERVERS
     USE_PROXY = True
-    PROXY_SERVERS_FILE_PATH = r"C:\Users\bniem\Downloads\proxyscrape_premium_http_proxies.txt"
+    PROXY_SERVERS_FILE_PATH = r""
 
     # THREADS1
     NO_WORKING_THREADS = 10
