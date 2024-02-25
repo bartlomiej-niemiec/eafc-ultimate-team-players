@@ -13,9 +13,10 @@ pip install -r requirements.txt
 ```
 
 ## Usage
-Script can be run in two modes:
+Script can be run in three modes:
 * fetch all of the Ultimate Team cards and write them to csv file,
 * write to csv file latest added players and stop at first card that is already in file.
+* update the price for all of the players in csv file.
 
 To select which mode you would like to run set it in main.py:
 
