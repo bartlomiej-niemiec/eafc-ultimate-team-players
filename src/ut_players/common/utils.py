@@ -1,7 +1,5 @@
 import csv
-
 import pandas as pd
-
 from futwiz.player_page.player_data_template import CommonPosStats, PlayerDataTemplateFactory
 
 

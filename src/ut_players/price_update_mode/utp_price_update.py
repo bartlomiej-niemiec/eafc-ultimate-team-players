@@ -1,26 +1,22 @@
 import time
-
-from file_logging.utils import does_file_include_player_stats, get_csv_content
-from fut_players.price_update.fur_players_price_update_supervisor import FutPlayersPriceUpdaterSupervisor
-from fut_players.price_update.player_url_generator import PlayerUrlGenerator
-from progress_bar.player_save_notifier import PlayerSaveNotifier
-from progress_bar.players_complete_progressbar import PlayersCompleteProgressBar
+from ut_players.common.utils import does_file_include_player_stats, get_csv_content
+from ut_players.common.utp_base import UtpBase
+from ut_players.price_update_mode.utp_price_update_supervisor import FutPlayersPriceUpdaterSupervisor
+from ut_players.common.player_url_generator import PlayerUrlGenerator
 from utils.get_requests.get_request_factory import HttpGetRequestFactory
 from utils.proxy_servers import ProxyPool, get_proxy_servers_from_file
 from utils.thread_safe_queue import ThreadSafeQueue
-from fut_players.common.player_visitor import PlayerVisitorToolset
-from file_logging.csv_price_updater import CsvpPriceUpdater
+from ut_players.common.player_visitor import PlayerVisitorToolset
+from ut_players.price_update_mode.utp_price_update_csv_logger import PriceUpdateLogger
 
 TERMINATE_DELAY = 2
 
 
-class FutPlayersPriceUpdater:
+class FutPlayersPriceUpdater(UtpBase):
 
     def __init__(self, config):
+        super().__init__(config)
         self._logging_queue = ThreadSafeQueue()
-        self._progress_bar = None
-        self._player_save_notifier = None
-        self._supervisor = None
         self._logging_thread = None
         self._toolset = None
         self._proxy_pool = None
@@ -37,29 +33,19 @@ class FutPlayersPriceUpdater:
         self._logging_thread.stop()
         time.sleep(TERMINATE_DELAY)
 
-    def stop(self):
-        pass
-
     def _init(self):
-        self._init_progress_bar()
+        self._init_progress_bar(len(self._csv_content) - 1)
         self._init_player_progress_notification()
         self._appoint_supervisor()
         self._spawn_logging_thread()
 
     def _spawn_logging_thread(self):
-        self._logging_thread = CsvpPriceUpdater(
+        self._logging_thread = PriceUpdateLogger(
             self._logging_queue,
             self._config.CSV_FILE_NAME,
             self._player_save_notifier,
             self._config.DELAY_TO_NEXT_REQUEST_S
         )
-
-    def _init_progress_bar(self):
-        self._progress_bar = PlayersCompleteProgressBar(len(self._csv_content) - 1)
-
-    def _init_player_progress_notification(self):
-        self._player_save_notifier = PlayerSaveNotifier()
-        self._player_save_notifier.register_observer(self._progress_bar)
 
     def _appoint_supervisor(self):
         if self._config.USE_PROXY:

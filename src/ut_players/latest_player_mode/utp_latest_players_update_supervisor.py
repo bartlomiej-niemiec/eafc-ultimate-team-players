@@ -1,11 +1,11 @@
-from fut_players.common.page_visitor import PageVisitorWithStopEvent
+from ut_players.common.page_visitor import PageVisitorWithStopEvent
 from threading import Thread, Event
 
 
-class FutPlayersUpdaterSupervisor:
+class UtpLatestPlayerUpdateSupervisor:
 
     def __init__(self, no_more_to_update: Event, toolset):
-        super(FutPlayersUpdaterSupervisor, self).__init__()
+        super(UtpLatestPlayerUpdateSupervisor, self).__init__()
         self._no_more_to_update = no_more_to_update
         self._stop_event = Event()
         self._toolset = toolset

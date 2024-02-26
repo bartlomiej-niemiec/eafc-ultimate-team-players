@@ -1,5 +1,4 @@
 from http import HTTPStatus
-
 from futwiz.players_page.player_ref import PlayerRef
 
 

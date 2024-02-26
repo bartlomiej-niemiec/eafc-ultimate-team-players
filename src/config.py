@@ -30,4 +30,4 @@ class PriceUpdateConfig(CommonConfig, ProxyServersConfig):
 class GetAllPlayersModeConfig(CommonConfig, ProxyServersConfig):
     # PAGES
     START_PAGE = 0
-    END_PAGE = 2  # None means get all pages
+    END_PAGE = None  # None means get all pages

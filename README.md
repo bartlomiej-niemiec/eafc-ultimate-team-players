@@ -21,11 +21,11 @@ Script can be run in three modes:
 To select which mode you would like to run set it in main.py:
 
 ```python
-from fut_players.fut_players_runner import FutPlayersRunner
-from fut_players.fut_players_mode import FutPlayersMode
+from ut_players.ut_players_factory import UtPlayersRunnerFactory
+from ut_players.ut_players_mode import UtPlayersMode
 
 if __name__ == "__main__":
-    fut_players = FutPlayersRunner.create(FutPlayersMode.LatestPlayerUpdate)
+    fut_players = UtPlayersRunnerFactory.create(UtPlayersMode.LatestPlayerUpdate)
     fut_players.run()
 
 ```
@@ -35,3 +35,11 @@ Each run of script can be configured in **config.py** im term of:
 * csv filepath,
 * max retries of http get request,
 * time delay to next request\time delay between each retry.
+
+How proxy servers .txt file should look like:
+```bash
+<address_ip>:<port>
+<address_ip>:<port>
+<address_ip>:<port>
+<address_ip>:<port>
+```
