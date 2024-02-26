@@ -1,4 +1,4 @@
-from fut_players.common.player_visitor import PlayerVisitor
+from ut_players.common.player_visitor import PlayerVisitor
 from threading import Thread
 
 

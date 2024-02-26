@@ -1,16 +1,15 @@
 import time
-from threading import Thread, Event
-from file_logging.utils import does_file_include_player_stats, get_csv_content
-from futwiz.player_page.player_data_template import PlayerDataTemplateFactory
+from threading import Event
+from ut_players.common.file_logger_base import FileLogger
+from ut_players.common.utils import does_file_include_player_stats, get_csv_content
 from futwiz.player_page.player_page_parser import PlayerDataParser
 from futwiz.player_page.player_data_template import GeneralPlayerData
-import os
 
 
-class CsvpPriceUpdater(Thread):
+class PriceUpdateLogger(FileLogger):
 
     def __init__(self, player_ref_queue, filepath, player_complete_notifier, thread_interval_s):
-        super(CsvpPriceUpdater, self).__init__()
+        super(PriceUpdateLogger, self).__init__()
         self._thread_interval_s = thread_interval_s
         self._player_ref_queue = player_ref_queue
         self._stop_event = Event()
@@ -19,7 +18,6 @@ class CsvpPriceUpdater(Thread):
         self._csv_content = None
         self._player_complete_notifier = player_complete_notifier
         self._with_player_stats = does_file_include_player_stats(filepath)
-        self._headers = PlayerDataTemplateFactory().create(self._with_player_stats).keys()
         self._map_futwiz_link = dict()
 
     def run(self):
@@ -31,10 +29,10 @@ class CsvpPriceUpdater(Thread):
 
     def _read_csv_content(self):
         self.csv_content = get_csv_content(self._filepath)
-        self._map_futwiz_link_to_row_index()
+        self._map_futwiz_link_to_csv_row_index()
 
     def _save_back_to_csv(self):
-        self.csv_content.to_csv(self._filepath, sep=';', encoding='utf-8', mode='w', header=None)
+        self.csv_content.to_csv(self._filepath, sep=';', encoding='utf-8', mode='w', header=None, index=False)
 
     def _logger(self):
         while not self._stop_event.is_set():
@@ -52,7 +50,7 @@ class CsvpPriceUpdater(Thread):
             False
         )
 
-    def _map_futwiz_link_to_row_index(self):
+    def _map_futwiz_link_to_csv_row_index(self):
         for row, series in self.csv_content.iterrows():
             if row > 0:
                 self._map_futwiz_link[series[GeneralPlayerData.FutwizLink]] = row

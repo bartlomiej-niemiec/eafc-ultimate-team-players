@@ -1,9 +1,9 @@
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
-from fut_players.common.page_visitor import PageVisitor
+from ut_players.common.page_visitor import PageVisitor
 
 
-class FutPlayersSupervisor:
+class UtpGetAllPlayerSupervisor:
 
     def __init__(self, no_pages, no_threads, toolset):
         self._worker_toolset = toolset
