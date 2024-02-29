@@ -39,9 +39,20 @@ class PlayerDataParser:
         for content in _player_details:
             content_text_splitted = [element for element in content.text.split('\n') if element]
             if len(content_text_splitted) > 1:
+                if content_text_splitted[0] == GeneralPlayerData.AltPos:
+                    ALT_POS_INDEX = 3
+                    content_text_splitted[1] = self._fetch_alt_pos(content.contents[ALT_POS_INDEX])
                 key = content_text_splitted[0]
                 value = content_text_splitted[1]
                 self._player_data_dict[key] = value
+
+    def _fetch_alt_pos(self, content):
+        alt_pos = ""
+        for i, item in enumerate(content):
+            if i != 0:
+                alt_pos += ", "
+            alt_pos += item.text
+        return alt_pos
 
     def _fetch_player_price(self):
         price_dive = self._soup.find(DIV_TAG, class_=PlayerPageConsts.DIV_PLAYER_MARKET_VALUE)
@@ -87,7 +98,8 @@ class PlayerDataParser:
         playstyle_map = {CommonPosStats.PlayStylesPlus: "", CommonPosStats.PlayStyles: ""}
         i = 0
         for i in range(playstyle_info_start_index + 1, len(player_stats_in_games_text) - 1, 2):
-            if "no PlayStyles+" in player_stats_in_games_text[i] or "no PlayStyles+" in player_stats_in_games_text[i + 1]:
+            if "no PlayStyles+" in player_stats_in_games_text[i] or "no PlayStyles+" in player_stats_in_games_text[
+                i + 1]:
                 i += 1
                 break
             elif (player_stats_in_games_text[i] != CommonPosStats.PlayStyles and \
