@@ -21,8 +21,8 @@ class FutPlayersPriceUpdater(UtpBase):
         self._toolset = None
         self._proxy_pool = None
         self._config = config
-        self._player_stats_in_file = does_file_include_player_stats(config.CSV_FILE_NAME)
-        self._csv_content = get_csv_content(config.CSV_FILE_NAME)
+        self._player_stats_in_file = does_file_include_player_stats(config.CSV_FILEPATH)
+        self._csv_content = get_csv_content(config.CSV_FILEPATH)
         self._player_getter = PlayerUrlGenerator(self._csv_content)
 
     def run(self):
@@ -42,14 +42,14 @@ class FutPlayersPriceUpdater(UtpBase):
     def _spawn_logging_thread(self):
         self._logging_thread = PriceUpdateLogger(
             self._logging_queue,
-            self._config.CSV_FILE_NAME,
+            self._config.CSV_FILEPATH,
             self._player_save_notifier,
             self._config.DELAY_TO_NEXT_REQUEST_S
         )
 
     def _appoint_supervisor(self):
         if self._config.USE_PROXY:
-            self._proxy_pool = ProxyPool(get_proxy_servers_from_file(self._config.PROXY_SERVERS_FILE_PATH))
+            self._proxy_pool = ProxyPool(get_proxy_servers_from_file(self._config.PROXY_SERVERS_FILEPATH))
         self._toolset = PlayerVisitorToolset(
             self._logging_queue,
             HttpGetRequestFactory.create(self._proxy_pool, self._config.MAX_RETRIES),

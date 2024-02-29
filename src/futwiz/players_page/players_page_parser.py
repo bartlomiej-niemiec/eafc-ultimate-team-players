@@ -17,8 +17,9 @@ class PlayerPageParserFactory:
 
 class PlayersPageParser:
 
-    def __init__(self, players_page_text, a_tag_class):
-        self._soup = BeautifulSoup(players_page_text, SOUP_HTML_PARSER)
+    def __init__(self, players_page_source, a_tag_class):
+        players_page_source_decoded = players_page_source.encode("iso-8859-1").decode("utf-8")
+        self._soup = BeautifulSoup(players_page_source_decoded, SOUP_HTML_PARSER)
         self._players = []
         self._a_tag_class = a_tag_class
 

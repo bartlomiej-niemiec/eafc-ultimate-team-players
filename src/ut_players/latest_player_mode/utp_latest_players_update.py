@@ -39,7 +39,7 @@ class UtpLatestPlayersUpdate(UtpBase):
     def _spawn_logging_thread(self):
         self._logging_thread = LatestPlayersLogger(
             self._logging_queue,
-            self._config.CSV_FILE_NAME,
+            self._config.CSV_FILEPATH,
             self._no_more_to_update,
             self._player_save_notifier,
             self._config.DELAY_TO_NEXT_REQUEST_S

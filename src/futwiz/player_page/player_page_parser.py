@@ -14,7 +14,8 @@ class PlayerDataParser:
 
     def parse_and_get_player_data(self, player_page_source, with_players_stats=False):
         self._player_data_dict = PlayerDataTemplateFactory().create(with_players_stats)
-        self._soup = BeautifulSoup(player_page_source, SOUP_HTML_PARSER)
+        player_page_source_decoded = player_page_source.encode("iso-8859-1").decode("utf-8")
+        self._soup = BeautifulSoup(player_page_source_decoded, SOUP_HTML_PARSER)
         self._parse_common_data()
         if with_players_stats:
             self._parse_player_stats_data()
@@ -64,7 +65,6 @@ class PlayerDataParser:
         self._player_data_dict[GeneralPlayerData.Position] = player_position
 
     def _fetch_player_game_stats(self):
-
         player_stats_in_games = self._soup.find(DIV_TAG, class_=PlayerPageConsts.DIV_PLAYERS_ALL_STATS_IN_GAMES)
         player_stats_in_games_text = [element for element in player_stats_in_games.text.split('\n') if element]
         playstyle_info_start_index = player_stats_in_games_text.index(CommonPosStats.PlayStylesPlus)
@@ -87,8 +87,7 @@ class PlayerDataParser:
         playstyle_map = {CommonPosStats.PlayStylesPlus: "", CommonPosStats.PlayStyles: ""}
         i = 0
         for i in range(playstyle_info_start_index + 1, len(player_stats_in_games_text) - 1, 2):
-            if "no PlayStyles+" in player_stats_in_games_text[i] or "no PlayStyles+" in player_stats_in_games_text[
-                i + 1]:
+            if "no PlayStyles+" in player_stats_in_games_text[i] or "no PlayStyles+" in player_stats_in_games_text[i + 1]:
                 i += 1
                 break
             elif (player_stats_in_games_text[i] != CommonPosStats.PlayStyles and \

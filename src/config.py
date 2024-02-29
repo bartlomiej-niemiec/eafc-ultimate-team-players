@@ -7,13 +7,13 @@ class CommonConfig:
     # CSV LOGGING
     INCLUDE_PLAYER_STATS = True
     LOGGING_THREAD_DELAY_S = 0.05
-    CSV_FILE_NAME = "../fut_players.csv"
+    CSV_FILEPATH = "../fut_players.csv"
 
 
 class ProxyServersConfig:
     # PROXY SERVERS
     USE_PROXY = True
-    PROXY_SERVERS_FILE_PATH = r""
+    PROXY_SERVERS_FILEPATH = r""
 
     # THREADS1
     NO_WORKING_THREADS = 10

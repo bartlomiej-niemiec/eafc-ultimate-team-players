@@ -47,7 +47,7 @@ class UtpGetAllPlayers(UtpBase):
         self._logging_thread = AllPlayersLogger(
             self._logging_queue,
             self._player_save_notifier,
-            self._config.CSV_FILE_NAME,
+            self._config.CSV_FILEPATH,
             self._config.LOGGING_THREAD_DELAY_S,
             self._config.INCLUDE_PLAYER_STATS
         )
@@ -64,7 +64,7 @@ class UtpGetAllPlayers(UtpBase):
 
     def _appoint_supervisor(self):
         if self._config.USE_PROXY:
-            self._proxy_pool = ProxyPool(get_proxy_servers_from_file(self._config.PROXY_SERVERS_FILE_PATH))
+            self._proxy_pool = ProxyPool(get_proxy_servers_from_file(self._config.PROXY_SERVERS_FILEPATH))
         self._toolset = Toolset(
             self._logging_queue,
             PlayerPageUrlFactory.create(self.start_page_number, PlayersPageType.AllPlayers),
