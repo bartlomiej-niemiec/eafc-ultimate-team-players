@@ -20,6 +20,7 @@ class UtpLatestPlayersUpdate(UtpBase):
         self._no_more_to_update = Event()
         self._logging_thread = None
         self._toolset = None
+        self._supervisor = None
 
     def __del__(self):
         print("Update Complete!")

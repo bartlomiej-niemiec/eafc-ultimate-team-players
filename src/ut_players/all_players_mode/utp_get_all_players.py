@@ -24,6 +24,7 @@ class UtpGetAllPlayers(UtpBase):
         self._logging_thread = None
         self._toolset = None
         self._proxy_pool = None
+        self._supervisor = None
 
     def run(self):
         self._init()

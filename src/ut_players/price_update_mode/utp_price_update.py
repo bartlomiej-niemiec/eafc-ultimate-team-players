@@ -24,6 +24,7 @@ class FutPlayersPriceUpdater(UtpBase):
         self._player_stats_in_file = does_file_include_player_stats(config.CSV_FILEPATH)
         self._csv_content = get_csv_content(config.CSV_FILEPATH)
         self._player_getter = PlayerUrlGenerator(self._csv_content)
+        self._supervisor = None
 
     def run(self):
         self._init()
