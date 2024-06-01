@@ -2,13 +2,16 @@ from sqlalchemy import Text, ForeignKey, Integer
 from sqlalchemy.orm import Mapped, relationship
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.dialects.sqlite import DATE
-
 from src.db.Models.Base import Base
 from src.db.Models.PlayerAltPosition import PlayerAltPositions
 from src.db.Models.PlayerPlaystyles import PlayerPlaystyles
 from src.db.Models.PlayerPlaystylesPlus import PlayerPlaystylesPlus
-from src.db.Models.NationalityPlayers import NationalityPlayers
-from src.db.Models.ClubsPlayers import ClubsPlayers
+from src.db.Models.Clubs import Clubs
+from src.db.Models.Playstyles import Playstyles
+from src.db.Models.Positions import Positions
+
+from typing import List
+
 
 class Players(Base):
     __tablename__ = "Players"
@@ -17,21 +20,23 @@ class Players(Base):
     futwiz_link: Mapped[str] = mapped_column(Text, nullable=False)
 
     player_basic_info_id = mapped_column(ForeignKey("PlayersBasicInfo.id"))
-    player_basic_info = relationship("PlayersBasicInfo", back_populates="players")
-
-    added = mapped_column(DATE)
+    player_basic_info: Mapped["PlayersBasicInfo"] = relationship(back_populates="players")
 
     version_id = mapped_column(ForeignKey("Versions.id"))
-    version = relationship("Versions", back_populates="players")
+    version: Mapped["Versions"] = relationship(back_populates="players")
 
     club_id = mapped_column(ForeignKey("Clubs.id"))
-    club = relationship("Clubs", back_populates="players")
-
-    price: Mapped[int] = mapped_column(Integer, nullable=False)
+    club: Mapped["Clubs"] = relationship(back_populates="players")
 
     positions_id = mapped_column(ForeignKey("Positions.id"))
-    positions = relationship("Positions", back_populates="players")
+    position: Mapped["Positions"] = relationship(back_populates="players")
 
+    accelerate_id = mapped_column(ForeignKey("Accelerate.id"))
+    accelerate: Mapped["Accelerate"] = relationship(back_populates="players")
+
+    # Info
+    added = mapped_column(DATE)
+    price: Mapped[int] = mapped_column(Integer, nullable=False)
     overall: Mapped[int] = mapped_column(Integer, nullable=False)
     skill_moves: Mapped[str] = mapped_column(Text, nullable=False)
     weak_foot: Mapped[str] = mapped_column(Text, nullable=False)
@@ -42,10 +47,7 @@ class Players(Base):
     weight: Mapped[str] = mapped_column(Text, nullable=False)
     body_type: Mapped[str] = mapped_column(Text, nullable=False)
 
-    accelerate_id = mapped_column(ForeignKey("Accelerate.id"))
-    accelerate = relationship("Accelerate", back_populates="players")
-
-    #Standard Stats
+    # Standard Stats
     acceleration: Mapped[int] = mapped_column(Integer, nullable=False)
     sprint_speed: Mapped[int] = mapped_column(Integer, nullable=False)
     positioning: Mapped[int] = mapped_column(Integer, nullable=False)
@@ -80,21 +82,20 @@ class Players(Base):
     strength: Mapped[int] = mapped_column(Integer, nullable=False)
     aggression: Mapped[int] = mapped_column(Integer, nullable=False)
 
-    #GK Stats
-    div: Mapped[int] = mapped_column(Integer)
-    gk_diving: Mapped[int] = mapped_column(Integer)
-    ref: Mapped[int] = mapped_column(Integer)
-    gk_reflexes: Mapped[int] = mapped_column(Integer)
-    han: Mapped[int] = mapped_column(Integer)
-    gk_handling: Mapped[int] = mapped_column(Integer)
-    spd: Mapped[int] = mapped_column(Integer)
-    kic: Mapped[int] = mapped_column(Integer)
-    gk_kicking: Mapped[int] = mapped_column(Integer)
-    pos: Mapped[int] = mapped_column(Integer)
-    gk_pos: Mapped[int] = mapped_column(Integer)
+    # GK Stats
+    div: Mapped[int] = mapped_column(Integer, nullable=True)
+    gk_diving: Mapped[int] = mapped_column(Integer, nullable=True)
+    ref: Mapped[int] = mapped_column(Integer, nullable=True)
+    gk_reflexes: Mapped[int] = mapped_column(Integer, nullable=True)
+    han: Mapped[int] = mapped_column(Integer, nullable=True)
+    gk_handling: Mapped[int] = mapped_column(Integer, nullable=True)
+    spd: Mapped[int] = mapped_column(Integer, nullable=True)
+    kic: Mapped[int] = mapped_column(Integer, nullable=True)
+    gk_kicking: Mapped[int] = mapped_column(Integer, nullable=True)
+    pos: Mapped[int] = mapped_column(Integer, nullable=True)
+    gk_pos: Mapped[int] = mapped_column(Integer, nullable=True)
 
-    alt_positions = relationship(secondary=PlayerAltPositions, back_populates="players")
-    player_playstyles = relationship(secondary=PlayerPlaystyles, back_populates="players")
-    player_playstyles_plus = relationship(secondary=PlayerPlaystylesPlus, back_populates="players")
-    nationality_players = relationship(secondary=NationalityPlayers, back_populates="players")
-    clubs_players = relationship(secondary=ClubsPlayers, back_populates="players")
+    alt_positions: Mapped[List[Positions]] = relationship(secondary=PlayerAltPositions, back_populates="players")
+    player_playstyles: Mapped[List[Playstyles]] = relationship(secondary=PlayerPlaystyles, back_populates="players")
+    player_playstyles_plus: Mapped[List[Playstyles]] = relationship(secondary=PlayerPlaystylesPlus,
+                                                                    back_populates="players")

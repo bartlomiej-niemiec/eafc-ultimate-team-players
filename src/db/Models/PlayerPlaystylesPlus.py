@@ -1,6 +1,7 @@
-from sqlalchemy import ForeignKey, Integer
-from sqlalchemy.orm import relationship
-from sqlalchemy.orm import mapped_column
+from sqlalchemy import ForeignKey
+from sqlalchemy import Table
+from sqlalchemy import Column
+
 from src.db.Models.Base import Base
 
 

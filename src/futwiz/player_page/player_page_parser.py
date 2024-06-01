@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup
+from bs4.element import NavigableString
 import futwiz.player_page.constants as PlayerPageConsts
 from futwiz.player_page.player_data_template import PlayerDataTemplateFactory, GeneralPlayerData, CommonPosStats
 from futwiz.player_page.common_version_checker import get_version
@@ -56,7 +57,11 @@ class PlayerDataParser:
 
     def _fetch_player_price(self):
         price_dive = self._soup.find(DIV_TAG, class_=PlayerPageConsts.DIV_PLAYER_MARKET_VALUE)
-        price = int(price_dive.contents[self._CONTENT_INDEX].replace(',', ''))
+        price = None
+        for item in price_dive.contents:
+            if type(item) is NavigableString:
+                price = int(item.replace(',', ''))
+                break
         self._player_data_dict[GeneralPlayerData.Price] = price
 
     def _fetch_player_overall_rating(self):

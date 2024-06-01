@@ -1,5 +1,6 @@
 import time
-from ut_players.common.utils import does_file_include_player_stats, get_csv_content
+from ut_players.common.utils import does_file_include_player_stats
+from utils.csv_utils import get_csv_content
 from ut_players.common.utp_base import UtpBase
 from ut_players.price_update_mode.utp_price_update_supervisor import FutPlayersPriceUpdaterSupervisor
 from ut_players.common.player_url_generator import PlayerUrlGenerator
