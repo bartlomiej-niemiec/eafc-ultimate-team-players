@@ -6,6 +6,7 @@ from src.db.Models.Base import Base
 
 
 class Playstyles(Base):
+
     __tablename__ = "Playstyles"
 
     id: Mapped[int] = mapped_column(primary_key=True)

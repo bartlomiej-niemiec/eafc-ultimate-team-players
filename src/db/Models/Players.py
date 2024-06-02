@@ -14,6 +14,7 @@ from typing import List
 
 
 class Players(Base):
+
     __tablename__ = "Players"
 
     id: Mapped[int] = mapped_column(primary_key=True)

@@ -6,6 +6,7 @@ from src.db.Models.Base import Base
 
 
 class Positions(Base):
+
     __tablename__ = "Positions"
 
     id: Mapped[int] = mapped_column(primary_key=True)

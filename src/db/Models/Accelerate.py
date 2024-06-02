@@ -5,6 +5,7 @@ from src.db.Models.Base import Base
 
 
 class Accelerate(Base):
+
     __tablename__ = "Accelerate"
 
     id: Mapped[int] = mapped_column(primary_key=True)

@@ -6,6 +6,7 @@ from typing import List
 
 
 class Leagues(Base):
+
     __tablename__ = "Leagues"
 
     id: Mapped[int] = mapped_column(primary_key=True)

@@ -5,6 +5,7 @@ from src.db.Models.Base import Base
 
 
 class PlayersBasicInfo(Base):
+
     __tablename__ = "PlayersBasicInfo"
 
     id: Mapped[int] = mapped_column(primary_key=True)
