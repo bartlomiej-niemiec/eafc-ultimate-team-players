@@ -1,6 +1,7 @@
 from sqlalchemy import create_engine
 from src.db.DbFactory import Fc24PlayersDbFactory
 from src.utils.csv_utils import get_csv_content, CsvIterator
+from src.utils.ea_fc_card import FcPlayerCardFactory
 from src.config import CommonConfig
 
 if __name__ == "__main__":
@@ -9,5 +10,7 @@ if __name__ == "__main__":
     csv_content = get_csv_content("../" + CommonConfig.CSV_FILEPATH)
     csv_iterator = CsvIterator(csv_content)
     for row in csv_iterator:
-        print(row)
+        card = FcPlayerCardFactory.create(row)
+        print(card.__dict__)
+
 

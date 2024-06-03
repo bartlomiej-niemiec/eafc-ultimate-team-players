@@ -39,7 +39,7 @@ class CsvIterator:
         return self._csv_df.iloc[current_index].tolist()
 
 
-class CsvRowAttributeIndex(Enum):
+class CsvRowAttributeIndex:
     ADDED = 0
     AGE = 1
     ALTERNATIVE_POS = 2
