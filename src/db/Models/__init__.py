@@ -7,7 +7,7 @@ from .PlayerAltPosition import PlayerAltPositions
 from .PlayerBasicInfo import PlayersBasicInfo
 from .PlayerPlaystyles import PlayerPlaystyles
 from .PlayerPlaystylesPlus import PlayerPlaystylesPlus
+from .Positions import Positions
 from .Players import Players
 from .Playstyles import Playstyles
-from .Positions import Positions
 from .Versions import Versions

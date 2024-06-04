@@ -9,6 +9,6 @@ class Leagues(Base):
 
     __tablename__ = "Leagues"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(Text)
-    clubs: Mapped[List["Clubs"]] = relationship(back_populates="clubs")
+    clubs: Mapped[List["Clubs"]] = relationship(back_populates="league")

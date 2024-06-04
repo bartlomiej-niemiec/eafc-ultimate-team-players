@@ -17,23 +17,23 @@ class Players(Base):
 
     __tablename__ = "Players"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
     futwiz_link: Mapped[str] = mapped_column(Text, nullable=False)
 
     player_basic_info_id = mapped_column(ForeignKey("PlayersBasicInfo.id"))
-    player_basic_info: Mapped["PlayersBasicInfo"] = relationship(back_populates="players")
+    player_basic_info: Mapped["PlayersBasicInfo"] = relationship(back_populates="player")
 
     version_id = mapped_column(ForeignKey("Versions.id"))
-    version: Mapped["Versions"] = relationship(back_populates="players")
+    version: Mapped["Versions"] = relationship(back_populates="player")
 
     club_id = mapped_column(ForeignKey("Clubs.id"))
-    club: Mapped["Clubs"] = relationship(back_populates="players")
+    club: Mapped["Clubs"] = relationship(back_populates="player")
 
     positions_id = mapped_column(ForeignKey("Positions.id"))
-    position: Mapped["Positions"] = relationship(back_populates="players")
+    position: Mapped["Positions"] = relationship(back_populates="player")
 
     accelerate_id = mapped_column(ForeignKey("Accelerate.id"))
-    accelerate: Mapped["Accelerate"] = relationship(back_populates="players")
+    accelerate: Mapped["Accelerate"] = relationship(back_populates="player")
 
     # Info
     added = mapped_column(DATE)
@@ -96,7 +96,7 @@ class Players(Base):
     pos: Mapped[int] = mapped_column(Integer, nullable=True)
     gk_pos: Mapped[int] = mapped_column(Integer, nullable=True)
 
-    alt_positions: Mapped[List[Positions]] = relationship(secondary=PlayerAltPositions, back_populates="players")
-    player_playstyles: Mapped[List[Playstyles]] = relationship(secondary=PlayerPlaystyles, back_populates="players")
-    player_playstyles_plus: Mapped[List[Playstyles]] = relationship(secondary=PlayerPlaystylesPlus,
-                                                                    back_populates="players")
+    alt_positions: Mapped[List[Positions]] = relationship("Positions", secondary="PlayerAltPositions", back_populates="player_alt_pos")
+    player_playstyles: Mapped[List[Playstyles]] = relationship("Playstyles", secondary="PlayerPlaystyles", back_populates="player")
+    player_playstyles_plus: Mapped[List[Playstyles]] = relationship("Playstyles", secondary="PlayerPlaystylesPlus",
+                                                                    back_populates="player_plus")
