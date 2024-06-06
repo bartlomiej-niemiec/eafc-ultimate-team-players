@@ -9,5 +9,5 @@ class Accelerate(Base):
     __tablename__ = "Accelerate"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    name: Mapped[str] = mapped_column(Text)
+    name: Mapped[str] = mapped_column(Text, nullable=False)
     player = relationship("Players", back_populates="accelerate")

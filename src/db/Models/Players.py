@@ -1,23 +1,20 @@
 from sqlalchemy import Text, ForeignKey, Integer
 from sqlalchemy.orm import Mapped, relationship
 from sqlalchemy.orm import mapped_column
-from sqlalchemy.dialects.sqlite import DATE
+from sqlalchemy.dialects.sqlite import DATE, DATETIME
 from src.db.Models.Base import Base
-from src.db.Models.PlayerAltPosition import PlayerAltPositions
-from src.db.Models.PlayerPlaystyles import PlayerPlaystyles
-from src.db.Models.PlayerPlaystylesPlus import PlayerPlaystylesPlus
 from src.db.Models.Clubs import Clubs
 from src.db.Models.Playstyles import Playstyles
 from src.db.Models.Positions import Positions
 
 from typing import List
-
+from datetime import datetime
 
 class Players(Base):
 
     __tablename__ = "Players"
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     futwiz_link: Mapped[str] = mapped_column(Text, nullable=False)
 
     player_basic_info_id = mapped_column(ForeignKey("PlayersBasicInfo.id"))
@@ -26,14 +23,17 @@ class Players(Base):
     version_id = mapped_column(ForeignKey("Versions.id"))
     version: Mapped["Versions"] = relationship(back_populates="player")
 
-    club_id = mapped_column(ForeignKey("Clubs.id"))
+    club_id = mapped_column(ForeignKey("Clubs.id"), nullable=True)
     club: Mapped["Clubs"] = relationship(back_populates="player")
 
-    positions_id = mapped_column(ForeignKey("Positions.id"))
+    position_id = mapped_column(ForeignKey("Positions.id"))
     position: Mapped["Positions"] = relationship(back_populates="player")
 
-    accelerate_id = mapped_column(ForeignKey("Accelerate.id"))
+    accelerate_id = mapped_column(ForeignKey("Accelerate.id"),  nullable=True)
     accelerate: Mapped["Accelerate"] = relationship(back_populates="player")
+
+    nationality_id = mapped_column(ForeignKey("Nations.id"), nullable=True)
+    nationality: Mapped["Nations"] = relationship(back_populates="player")
 
     # Info
     added = mapped_column(DATE)
@@ -100,3 +100,5 @@ class Players(Base):
     player_playstyles: Mapped[List[Playstyles]] = relationship("Playstyles", secondary="PlayerPlaystyles", back_populates="player")
     player_playstyles_plus: Mapped[List[Playstyles]] = relationship("Playstyles", secondary="PlayerPlaystylesPlus",
                                                                     back_populates="player_plus")
+
+    updated_at: Mapped[DATETIME] = mapped_column(DATETIME, default=datetime.now, onupdate=datetime.now)

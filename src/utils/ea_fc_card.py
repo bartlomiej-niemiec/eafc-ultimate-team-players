@@ -17,6 +17,7 @@ class FcPlayerCard:
     futwizLink: str
     height: str
     futwizId: str
+    league: str
     fullname: str
     nationality: str
     overallRating: int
@@ -81,20 +82,24 @@ class FcPlayerCardFactory:
 
     @staticmethod
     def create(attributes_list):
+
+        FcPlayerCardFactory._strip_all_strs_in_list(attributes_list)
+
         return FcPlayerCard(
             added=attributes_list[CsvRowAttributeIndex.ADDED],
             age=attributes_list[CsvRowAttributeIndex.AGE],
             alternativePos=FcPlayerCardFactory._attr_str_to_list(attributes_list[CsvRowAttributeIndex.ALTERNATIVE_POS]) if isinstance(attributes_list[CsvRowAttributeIndex.ALTERNATIVE_POS],str) else None,
             attWr=attributes_list[CsvRowAttributeIndex.ATT_WR],
             bodyType=attributes_list[CsvRowAttributeIndex.BODY_TYPE],
-            club=attributes_list[CsvRowAttributeIndex.CLUB],
+            club=str(attributes_list[CsvRowAttributeIndex.CLUB]),
             defWr=attributes_list[CsvRowAttributeIndex.DEF_WR],
             foot=attributes_list[CsvRowAttributeIndex.FOOT],
             futwizLink=attributes_list[CsvRowAttributeIndex.FUTWIZ_LINK],
             height=attributes_list[CsvRowAttributeIndex.HEIGHT],
             futwizId=attributes_list[CsvRowAttributeIndex.ID],
             fullname=attributes_list[CsvRowAttributeIndex.FULLNAME],
-            nationality=attributes_list[CsvRowAttributeIndex.NATIONALITY],
+            league=str(attributes_list[CsvRowAttributeIndex.LEAGUE]),
+            nationality=str(attributes_list[CsvRowAttributeIndex.NATIONALITY]),
             overallRating=attributes_list[CsvRowAttributeIndex.OVERALL_RATING],
             position=attributes_list[CsvRowAttributeIndex.POSITION],
             price=attributes_list[CsvRowAttributeIndex.PRICE],
@@ -102,7 +107,7 @@ class FcPlayerCardFactory:
             version=attributes_list[CsvRowAttributeIndex.VERSION],
             weakFoot=attributes_list[CsvRowAttributeIndex.WEAK_FOOT],
             weight=attributes_list[CsvRowAttributeIndex.WEIGHT],
-            accelerate=attributes_list[CsvRowAttributeIndex.ACCELERATE],
+            accelerate=str(attributes_list[CsvRowAttributeIndex.ACCELERATE]),
             acceleration=attributes_list[CsvRowAttributeIndex.ACCELERATION],
             aggression=attributes_list[CsvRowAttributeIndex.AGGRESSION],
             agility=attributes_list[CsvRowAttributeIndex.AGILITY],
@@ -156,3 +161,8 @@ class FcPlayerCardFactory:
     @staticmethod
     def _attr_str_to_list(attr):
         return [altPos.strip() for altPos in attr.split(',') if altPos.strip()]
+
+    @staticmethod
+    def _strip_all_strs_in_list(attributes_list):
+        for i in range(len(attributes_list)):
+            attributes_list[i] = attributes_list[i].strip() if isinstance(attributes_list[i], str) else attributes_list[i]
