@@ -10,11 +10,11 @@ from src.db.Models.Positions import Positions
 from typing import List
 from datetime import datetime
 
-class Players(Base):
 
+class Players(Base):
     __tablename__ = "Players"
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
     futwiz_link: Mapped[str] = mapped_column(Text, nullable=False)
 
     player_basic_info_id = mapped_column(ForeignKey("PlayersBasicInfo.id"))
@@ -29,11 +29,14 @@ class Players(Base):
     position_id = mapped_column(ForeignKey("Positions.id"))
     position: Mapped["Positions"] = relationship(back_populates="player")
 
-    accelerate_id = mapped_column(ForeignKey("Accelerate.id"),  nullable=True)
+    accelerate_id = mapped_column(ForeignKey("Accelerate.id"), nullable=True)
     accelerate: Mapped["Accelerate"] = relationship(back_populates="player")
 
     nationality_id = mapped_column(ForeignKey("Nations.id"), nullable=True)
     nationality: Mapped["Nations"] = relationship(back_populates="player")
+
+    bodytype_id = mapped_column(ForeignKey("BodyType.id"), nullable=True)
+    bodytype: Mapped["BodyType"] = relationship(back_populates="player")
 
     # Info
     added = mapped_column(DATE)
@@ -45,8 +48,7 @@ class Players(Base):
     att_wr: Mapped[str] = mapped_column(Text, nullable=False)
     def_wr: Mapped[str] = mapped_column(Text, nullable=False)
     height: Mapped[str] = mapped_column(Text, nullable=False)
-    weight: Mapped[str] = mapped_column(Text, nullable=False)
-    body_type: Mapped[str] = mapped_column(Text, nullable=False)
+    weight: Mapped[str] = mapped_column(Text, nullable=True)
 
     # Standard Stats
     acceleration: Mapped[int] = mapped_column(Integer, nullable=False)
@@ -57,27 +59,29 @@ class Players(Base):
     long_shots: Mapped[int] = mapped_column(Integer, nullable=False)
     volleys: Mapped[int] = mapped_column(Integer, nullable=False)
     penalties: Mapped[int] = mapped_column(Integer, nullable=False)
-    pas: Mapped[int] = mapped_column(Integer, nullable=False)
-    vision: Mapped[int] = mapped_column(Integer, nullable=False)
-    crossing: Mapped[int] = mapped_column(Integer, nullable=False)
-    fkacc: Mapped[int] = mapped_column(Integer, nullable=False)
-    short_pass: Mapped[int] = mapped_column(Integer, nullable=False)
-    long_pass: Mapped[int] = mapped_column(Integer, nullable=False)
-    curve: Mapped[int] = mapped_column(Integer, nullable=False)
-    dri: Mapped[int] = mapped_column(Integer, nullable=False)
+    pac: Mapped[int] = mapped_column(Integer, nullable=True)
+    pas: Mapped[int] = mapped_column(Integer, nullable=True)
+    vision: Mapped[int] = mapped_column(Integer, nullable=True)
+    crossing: Mapped[int] = mapped_column(Integer, nullable=True)
+    fkacc: Mapped[int] = mapped_column(Integer, nullable=True)
+    short_pass: Mapped[int] = mapped_column(Integer, nullable=True)
+    sho: Mapped[int] = mapped_column(Integer, nullable=True)
+    long_pass: Mapped[int] = mapped_column(Integer, nullable=True)
+    curve: Mapped[int] = mapped_column(Integer, nullable=True)
+    dri: Mapped[int] = mapped_column(Integer, nullable=True)
     agility: Mapped[int] = mapped_column(Integer, nullable=False)
     balance: Mapped[int] = mapped_column(Integer, nullable=False)
     reactions: Mapped[int] = mapped_column(Integer, nullable=False)
     ball_control: Mapped[int] = mapped_column(Integer, nullable=False)
     dribbling: Mapped[int] = mapped_column(Integer, nullable=False)
     composure: Mapped[int] = mapped_column(Integer, nullable=False)
-    DEF: Mapped[int] = mapped_column(Integer, nullable=False)
-    interceptions: Mapped[int] = mapped_column(Integer, nullable=False)
-    heading_acc: Mapped[int] = mapped_column(Integer, nullable=False)
-    def_awareness: Mapped[int] = mapped_column(Integer, nullable=False)
-    stand_tackle: Mapped[int] = mapped_column(Integer, nullable=False)
-    slide_tackle: Mapped[int] = mapped_column(Integer, nullable=False)
-    phy: Mapped[int] = mapped_column(Integer, nullable=False)
+    DEF: Mapped[int] = mapped_column(Integer, nullable=True)
+    interceptions: Mapped[int] = mapped_column(Integer, nullable=True)
+    heading_acc: Mapped[int] = mapped_column(Integer, nullable=True)
+    def_awareness: Mapped[int] = mapped_column(Integer, nullable=True)
+    stand_tackle: Mapped[int] = mapped_column(Integer, nullable=True)
+    slide_tackle: Mapped[int] = mapped_column(Integer, nullable=True)
+    phy: Mapped[int] = mapped_column(Integer, nullable=True)
     jumping: Mapped[int] = mapped_column(Integer, nullable=False)
     stamina: Mapped[int] = mapped_column(Integer, nullable=False)
     strength: Mapped[int] = mapped_column(Integer, nullable=False)
@@ -96,8 +100,10 @@ class Players(Base):
     pos: Mapped[int] = mapped_column(Integer, nullable=True)
     gk_pos: Mapped[int] = mapped_column(Integer, nullable=True)
 
-    alt_positions: Mapped[List[Positions]] = relationship("Positions", secondary="PlayerAltPositions", back_populates="player_alt_pos")
-    player_playstyles: Mapped[List[Playstyles]] = relationship("Playstyles", secondary="PlayerPlaystyles", back_populates="player")
+    alt_positions: Mapped[List[Positions]] = relationship("Positions", secondary="PlayerAltPositions",
+                                                          back_populates="player_alt_pos")
+    player_playstyles: Mapped[List[Playstyles]] = relationship("Playstyles", secondary="PlayerPlaystyles",
+                                                               back_populates="player")
     player_playstyles_plus: Mapped[List[Playstyles]] = relationship("Playstyles", secondary="PlayerPlaystylesPlus",
                                                                     back_populates="player_plus")
 

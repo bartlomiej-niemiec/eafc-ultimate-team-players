@@ -1,4 +1,7 @@
 from src.db.Models import *
+from src.utils.ea_fc_card import is_card_version_rare
+import datetime
+from sqlalchemy import insert
 
 
 class Fc24PlayersDbFactory:
@@ -21,45 +24,15 @@ class DbEaFcCardInsert:
     def _get_instance_of_model(self, model, **kwargs):
         return self._session.query(model).filter_by(**kwargs).first()
 
-    def _is_card_version_rare(self, card_version):
-        rare = 1
-        standard_versions = ["BRONZE", "SILVER", "GOLD"]
-        is_standard_version = False
-        for version in standard_versions:
-            if version in card_version:
-                is_standard_version = True
-                break
-        if is_standard_version and "RARE" not in card_version:
-            rare = 0
-
-        return rare
-
-    def _get_month_number(self, month_name):
-        months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-        month_num = -1
-        for i in range(len(months)):
-            if months[i] in month_name:
-                month_num = i + 1
-                break
-        return month_num
-
-    def _to_DATE_format(self, date_str):
-        date_str_splitted = date_str.split(",")
-        day_and_month = date_str_splitted[0].split()
-        day = day_and_month[1]
-        month = self._get_month_number(day_and_month[0])
-        year = date_str_splitted[1].split()[0]
-        return year + "-" + str(month) + "-" + day
-
     def insert_card(self, card):
         self._insert_player_basic_info(card)
         self._insert_positions(card)
-        self._insert_alt_positions(card)
         self._insert_version(card)
         self._insert_league(card)
         self._insert_nation(card)
         self._insert_accelerate(card)
         self._insert_club(card)
+        self._insert_playstyles(card)
         self._insert_player_card(card)
 
     def _insert_player_basic_info(self, card):
@@ -73,8 +46,6 @@ class DbEaFcCardInsert:
             name=card.position
         )
         self._create_if_not_exist(Positions, position, name=card.position)
-
-    def _insert_alt_positions(self, card):
         if card.alternativePos:
             for position in card.alternativePos:
                 alt_position = Positions(
@@ -85,7 +56,7 @@ class DbEaFcCardInsert:
     def _insert_version(self, card):
         version = Versions(
             name=card.version,
-            rare=self._is_card_version_rare(card.version)
+            rare=int(is_card_version_rare(card.version))
         )
         self._create_if_not_exist(Versions, version, name=card.version)
 
@@ -117,6 +88,28 @@ class DbEaFcCardInsert:
             )
             self._create_if_not_exist(Clubs, club, name=card.club)
 
+    def _insert_body_type(self, card):
+        if card.bodyType:
+            bodytype = BodyType(
+                name=card.bodyType
+            )
+            self._create_if_not_exist(BodyType, bodytype, name=card.bodyType)
+
+    def _insert_playstyles(self, card):
+        player_playstyles_set = set()
+
+        if card.playstyles:
+            player_playstyles_set |= set(card.playstyles)
+
+        if card.playstylesplus:
+            player_playstyles_set |= set(card.playstylesplus)
+
+        for playstyle in player_playstyles_set:
+            playstyle_instance = Playstyles(
+                name=playstyle
+            )
+            self._create_if_not_exist(Playstyles, playstyle_instance, name=playstyle)
+
     def _insert_player_card(self, card):
 
         player_basic_info = self._get_instance_of_model(PlayersBasicInfo, fullname=card.fullname)
@@ -125,16 +118,26 @@ class DbEaFcCardInsert:
         position = self._get_instance_of_model(Positions, name=card.position)
         accelerate = self._get_instance_of_model(Accelerate, name=card.accelerate)
         nationality = self._get_instance_of_model(Nations, name=card.nationality)
+        bodytype = self._get_instance_of_model(BodyType, name=card.bodyType)
 
         player_card = Players(
+            id=card.futwizId,
             futwiz_link=card.futwizLink,
             player_basic_info_id=player_basic_info.id,
+            player_basic_info=player_basic_info,
             version_id=version.id,
+            version=version,
             club_id=club.id,
-            position=position.id,
+            club=club,
+            position_id=position.id,
+            position=position,
             accelerate_id=accelerate.id,
+            accelerate=accelerate,
             nationality_id=nationality.id,
-            added=self._to_DATE_format(card.added),
+            nationality=nationality,
+            bodytype_id=bodytype.id if bodytype else None,
+            bodytype=bodytype,
+            added=card.added,
             price=card.price,
             overall=card.overallRating,
             skill_moves=card.skillMove,
@@ -143,7 +146,6 @@ class DbEaFcCardInsert:
             att_wr=card.attWr,
             def_wr=card.defWr,
             height=card.height,
-            body_type=card.bodyType,
             acceleration=card.acceleration,
             sprint_speed=card.sprintSpeed,
             positioning=card.positioning,
@@ -152,11 +154,13 @@ class DbEaFcCardInsert:
             long_shots=card.longShots,
             volleys=card.volleys,
             penalties=card.penalties,
+            pac=card.pac,
             pas=card.pas,
             vision=card.vision,
             crossing=card.crossing,
             fkacc=card.fkAcc,
             short_pass=card.shortPass,
+            sho=card.sho,
             long_pass=card.longPass,
             curve=card.curve,
             dri=card.dri,
@@ -177,8 +181,6 @@ class DbEaFcCardInsert:
             stamina=card.stamina,
             strength=card.strength,
             aggression=card.aggression,
-
-            # GK Stats
             div=card.div,
             gk_diving=card.gkDivinig,
             ref=card.ref,
@@ -190,6 +192,28 @@ class DbEaFcCardInsert:
             gk_kicking=card.gkKicking,
             pos=card.pos,
             gk_pos=card.gkPos,
+            updated_at=datetime.datetime.now()
         )
 
-        self._session.add(player_card)
+        self._insert_player_playstyles(player_card, card)
+        self._insert_player_playstyles_plus(player_card, card)
+        self._insert_player_alt_positions(player_card, card)
+        self._create_if_not_exist(Players, player_card, id=card.futwizId)
+
+    def _insert_player_playstyles(self, player_instance, card):
+        if card.playstyles:
+            for playstyle in card.playstyles:
+                playstyle_instance = self._get_instance_of_model(Playstyles, name=playstyle)
+                player_instance.player_playstyles.append(playstyle_instance)
+
+    def _insert_player_playstyles_plus(self, player_instance, card):
+        if card.playstylesplus:
+            for playstylesplus in card.playstylesplus:
+                playstylesplus_instance = self._get_instance_of_model(Playstyles, name=playstylesplus)
+                player_instance.player_playstyles_plus.append(playstylesplus_instance)
+
+    def _insert_player_alt_positions(self, player_instance, card):
+        if card.alternativePos:
+            for position in card.alternativePos:
+                position_instance = self._get_instance_of_model(Positions, name=position)
+                player_instance.alt_positions.append(position_instance)

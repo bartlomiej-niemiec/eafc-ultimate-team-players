@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 from typing import List
+import pandas as pd
+import datetime
 
 from utils.csv_utils import CsvRowAttributeIndex
 
@@ -16,7 +18,7 @@ class FcPlayerCard:
     foot: str
     futwizLink: str
     height: str
-    futwizId: str
+    futwizId: int
     league: str
     fullname: str
     nationality: str
@@ -83,20 +85,24 @@ class FcPlayerCardFactory:
     @staticmethod
     def create(attributes_list):
 
+        FcPlayerCardFactory._convert_nan_to_none(attributes_list)
         FcPlayerCardFactory._strip_all_strs_in_list(attributes_list)
 
         return FcPlayerCard(
-            added=attributes_list[CsvRowAttributeIndex.ADDED],
+            added=FcPlayerCardFactory._to_DATE_format(attributes_list[CsvRowAttributeIndex.ADDED]),
             age=attributes_list[CsvRowAttributeIndex.AGE],
-            alternativePos=FcPlayerCardFactory._attr_str_to_list(attributes_list[CsvRowAttributeIndex.ALTERNATIVE_POS]) if isinstance(attributes_list[CsvRowAttributeIndex.ALTERNATIVE_POS],str) else None,
+            alternativePos=FcPlayerCardFactory._attr_str_to_list(
+                attributes_list[CsvRowAttributeIndex.ALTERNATIVE_POS]) if isinstance(
+                attributes_list[CsvRowAttributeIndex.ALTERNATIVE_POS], str) else None,
             attWr=attributes_list[CsvRowAttributeIndex.ATT_WR],
-            bodyType=attributes_list[CsvRowAttributeIndex.BODY_TYPE],
+            bodyType=attributes_list[CsvRowAttributeIndex.BODY_TYPE] if attributes_list[
+                                                                            CsvRowAttributeIndex.BODY_TYPE] != "--" else None,
             club=str(attributes_list[CsvRowAttributeIndex.CLUB]),
             defWr=attributes_list[CsvRowAttributeIndex.DEF_WR],
             foot=attributes_list[CsvRowAttributeIndex.FOOT],
             futwizLink=attributes_list[CsvRowAttributeIndex.FUTWIZ_LINK],
             height=attributes_list[CsvRowAttributeIndex.HEIGHT],
-            futwizId=attributes_list[CsvRowAttributeIndex.ID],
+            futwizId=int(attributes_list[CsvRowAttributeIndex.ID]),
             fullname=attributes_list[CsvRowAttributeIndex.FULLNAME],
             league=str(attributes_list[CsvRowAttributeIndex.LEAGUE]),
             nationality=str(attributes_list[CsvRowAttributeIndex.NATIONALITY]),
@@ -131,8 +137,12 @@ class FcPlayerCardFactory:
             pas=attributes_list[CsvRowAttributeIndex.PAS],
             phy=attributes_list[CsvRowAttributeIndex.PHY],
             penalties=attributes_list[CsvRowAttributeIndex.PENALTIES],
-            playstyles=FcPlayerCardFactory._attr_str_to_list(attributes_list[CsvRowAttributeIndex.PLAYSTYLES]) if isinstance(attributes_list[CsvRowAttributeIndex.PLAYSTYLES], str) else None,
-            playstylesplus=FcPlayerCardFactory._attr_str_to_list(attributes_list[CsvRowAttributeIndex.PLAYSTYLES_PLUS]) if isinstance(attributes_list[CsvRowAttributeIndex.PLAYSTYLES_PLUS], str) else None,
+            playstyles=FcPlayerCardFactory._attr_str_to_list(
+                attributes_list[CsvRowAttributeIndex.PLAYSTYLES]) if isinstance(
+                attributes_list[CsvRowAttributeIndex.PLAYSTYLES], str) else None,
+            playstylesplus=FcPlayerCardFactory._attr_str_to_list(
+                attributes_list[CsvRowAttributeIndex.PLAYSTYLES_PLUS]) if isinstance(
+                attributes_list[CsvRowAttributeIndex.PLAYSTYLES_PLUS], str) else None,
             positioning=attributes_list[CsvRowAttributeIndex.POSITIONING],
             reactions=attributes_list[CsvRowAttributeIndex.REACTIONS],
             sho=attributes_list[CsvRowAttributeIndex.SHO],
@@ -165,4 +175,46 @@ class FcPlayerCardFactory:
     @staticmethod
     def _strip_all_strs_in_list(attributes_list):
         for i in range(len(attributes_list)):
-            attributes_list[i] = attributes_list[i].strip() if isinstance(attributes_list[i], str) else attributes_list[i]
+            attributes_list[i] = attributes_list[i].strip() if isinstance(attributes_list[i], str) else attributes_list[
+                i]
+
+    @staticmethod
+    def _convert_nan_to_none(attributes_list):
+        for i in range(len(attributes_list)):
+            attributes_list[i] = None if pd.isnull(attributes_list[i]) else attributes_list[i]
+
+    @staticmethod
+    def _get_month_number(month_name):
+        months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+        month_num = -1
+        for i in range(len(months)):
+            if months[i] in month_name:
+                month_num = i + 1
+                break
+        return month_num
+
+    @staticmethod
+    def _to_DATE_format(date_str):
+        date_str_split = date_str.split(",")
+        day_and_month = date_str_split[0].split()
+        day = day_and_month[1]
+        month = FcPlayerCardFactory._get_month_number(day_and_month[0])
+        year = date_str_split[1].split()[0]
+
+        new_date = datetime.date(year=int(year), month=int(month), day=int(day))
+
+        return new_date
+
+
+def is_card_version_rare(card_version):
+    rare = True
+    standard_versions = ["BRONZE", "SILVER", "GOLD"]
+    is_standard_version = False
+    for version in standard_versions:
+        if version in card_version:
+            is_standard_version = True
+            break
+    if is_standard_version and "RARE" not in card_version:
+        rare = False
+
+    return rare
