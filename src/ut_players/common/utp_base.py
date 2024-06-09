@@ -9,7 +9,6 @@ class UtpBase(ABC):
         self._config = config
         self._progress_bar = None
         self._player_save_notifier = None
-        self._supervisor = None
 
     @abstractmethod
     def run(self):
@@ -21,8 +20,4 @@ class UtpBase(ABC):
     def _init_player_progress_notification(self):
         self._player_save_notifier = PlayerSaveNotifier()
         self._player_save_notifier.register_observer(self._progress_bar)
-
-    @abstractmethod
-    def _appoint_supervisor(self):
-        pass
 

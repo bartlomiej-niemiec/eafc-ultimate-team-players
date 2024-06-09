@@ -3,7 +3,8 @@ import csv
 
 from threading import Event
 from ut_players.common.file_logger_base import FileLogger
-from ut_players.common.utils import does_file_include_player_stats, get_csv_content
+from ut_players.common.utils import does_file_include_player_stats
+from utils.csv_utils import get_csv_content
 from futwiz.player_page.player_data_template import GeneralPlayerData, PlayerDataTemplateFactory
 from futwiz.player_page.player_page_parser import PlayerDataParser
 
