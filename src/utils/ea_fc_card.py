@@ -201,19 +201,21 @@ class FcPlayerCardFactory:
         month = FcPlayerCardFactory._get_month_number(day_and_month[0])
         year = date_str_split[1].split()[0]
 
-        new_date = datetime.date(year=int(year), month=int(month), day=int(day))
+        date = datetime.date(year=int(year), month=int(month), day=int(day))
 
-        return new_date
+        return date
 
 
 def is_card_version_rare(card_version):
     rare = True
     standard_versions = ["BRONZE", "SILVER", "GOLD"]
     is_standard_version = False
+
     for version in standard_versions:
         if version in card_version:
             is_standard_version = True
             break
+
     if is_standard_version and "RARE" not in card_version:
         rare = False
 
