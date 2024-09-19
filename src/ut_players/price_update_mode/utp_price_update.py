@@ -46,7 +46,8 @@ class FutPlayersPriceUpdater(UtpBase):
             self._logging_queue,
             self._config.CSV_FILEPATH,
             self._player_save_notifier,
-            self._config.DELAY_TO_NEXT_REQUEST_S
+            self._config.DELAY_TO_NEXT_REQUEST_S,
+            self._config.EA_FC_VERSION
         )
 
     def _appoint_supervisor(self):

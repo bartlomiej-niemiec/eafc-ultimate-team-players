@@ -1,15 +1,17 @@
-from futwiz.players_page.constants import FUTWIZ_PLAYERS_URL, FUTWIZ_LATEST_PLAYERS_URL
 from futwiz.players_page.util import PlayersPageType
+from futwiz.players_page.html_elements_constants.html_elements_provider import HtmlElementsProvider
 
 
 class PlayerPageUrlFactory:
 
     @classmethod
-    def create(cls, start_page, players_page_type: PlayersPageType):
+    def create(cls, start_page, players_page_type: PlayersPageType, ea_fc_version):
         if players_page_type == PlayersPageType.AllPlayers:
-            return PlayersPageUrlGenerator(start_page, FUTWIZ_PLAYERS_URL)
+            futwiz_players_url = HtmlElementsProvider.get_html_constants(ea_fc_version).FUTWIZ_PLAYERS_URL
+            return PlayersPageUrlGenerator(start_page, futwiz_players_url)
         elif players_page_type == PlayersPageType.LatestAddedPlayers:
-            return PlayersPageUrlGenerator(0, FUTWIZ_LATEST_PLAYERS_URL)
+            futwiz_players_url = HtmlElementsProvider.get_html_constants(ea_fc_version).FUTWIZ_LATEST_PLAYERS_URL
+            return PlayersPageUrlGenerator(0, futwiz_players_url)
 
 
 class PlayersPageUrlGenerator:

@@ -14,6 +14,6 @@ class DbEngineFactory:
     @staticmethod
     def create(db):
         if RDBMS.SQLLITE3 == db:
-            return create_engine("sqlite+pysqlite:///fc_24_players.db", echo=True)
+            return create_engine("sqlite+pysqlite:///fc_24_players.db", echo=False)
         else:
             raise RDBMSNotSupported("Selected DB is not supported")

@@ -9,12 +9,12 @@ from futwiz.player_page.player_data_template import GeneralPlayerData
 
 class PriceUpdateLogger(FileLogger):
 
-    def __init__(self, player_ref_queue, filepath, player_complete_notifier, thread_interval_s):
+    def __init__(self, player_ref_queue, filepath, player_complete_notifier, thread_interval_s, ea_fc_version):
         super(PriceUpdateLogger, self).__init__()
         self._thread_interval_s = thread_interval_s
         self._player_ref_queue = player_ref_queue
         self._stop_event = Event()
-        self._player_data_parser = PlayerDataParser()
+        self._player_data_parser = PlayerDataParser(ea_fc_version)
         self._filepath = filepath
         self._csv_content = None
         self._player_complete_notifier = player_complete_notifier

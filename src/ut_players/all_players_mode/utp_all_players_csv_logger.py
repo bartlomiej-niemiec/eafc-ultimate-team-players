@@ -8,13 +8,13 @@ import time
 
 class AllPlayersLogger(FileLogger):
 
-    def __init__(self, player_ref_queue, player_complete_notifier, filepath, thread_interval_s, with_player_stats):
+    def __init__(self, player_ref_queue, player_complete_notifier, filepath, thread_interval_s, with_player_stats, ea_fc_version):
         super(AllPlayersLogger, self).__init__()
         self._player_ref_queue = player_ref_queue
         self._stop_event = Event()
         self._csv_dictwriter = None
         self._player_complete_notifier = player_complete_notifier
-        self._player_data_parser = PlayerDataParser()
+        self._player_data_parser = PlayerDataParser(ea_fc_version)
         self._filepath = filepath
         self._thread_interval_s = thread_interval_s
         self._with_player_stats = with_player_stats

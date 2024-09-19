@@ -12,13 +12,13 @@ from futwiz.player_page.player_page_parser import PlayerDataParser
 class LatestPlayersLogger(FileLogger):
 
     def __init__(self, player_ref_queue, filepath, no_more_to_update: Event, player_complete_notifier,
-                 thread_interval_s):
+                 thread_interval_s, ea_fc_version):
         super(LatestPlayersLogger, self).__init__()
         self._thread_interval_s = thread_interval_s
         self._player_ref_queue = player_ref_queue
         self._no_more_to_update = no_more_to_update
         self._stop_event = Event()
-        self._player_data_parser = PlayerDataParser()
+        self._player_data_parser = PlayerDataParser(ea_fc_version)
         self._filepath = filepath
         self._csv_content = None
         self._player_complete_notifier = player_complete_notifier

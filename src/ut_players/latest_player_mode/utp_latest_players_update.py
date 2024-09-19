@@ -43,13 +43,14 @@ class UtpLatestPlayersUpdate(UtpBase):
             self._config.CSV_FILEPATH,
             self._no_more_to_update,
             self._player_save_notifier,
-            self._config.DELAY_TO_NEXT_REQUEST_S
+            self._config.DELAY_TO_NEXT_REQUEST_S,
+            self._config.EA_FC_VERSION
         )
 
     def _appoint_supervisor(self):
         self._toolset = Toolset(
             self._logging_queue,
-            PlayerPageUrlFactory.create(0, PlayersPageType.LatestAddedPlayers),
+            PlayerPageUrlFactory.create(0, PlayersPageType.LatestAddedPlayers, self._config.EA_FC_VERSION),
             self._config.DELAY_TO_NEXT_REQUEST_S,
             HttpGetRequestFactory.create(None, self._config.MAX_RETRIES),
             PlayersPageType.LatestAddedPlayers

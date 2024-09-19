@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 from futwiz.players_page.util import PlayersPageType
-from futwiz.players_page.constants import A_PLAYERS_LIST, A_LATEST_PLAYERS_LIST
+from futwiz.players_page.html_elements_constants.common_html_constants import A_PLAYERS_LIST, A_LATEST_PLAYERS_LIST
 from futwiz.players_page.player_ref import PlayerRefFactory
 from utils.constants import SOUP_HTML_PARSER, A_TAG
 

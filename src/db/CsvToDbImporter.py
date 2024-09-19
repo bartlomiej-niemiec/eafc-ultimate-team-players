@@ -9,9 +9,10 @@ from utils.ea_fc_card import FcPlayerCardFactory
 
 class CsvToDbImporter:
 
-    def __init__(self, csv_content, rdbms):
+    def __init__(self, csv_content, rdbms, player_save_notifier):
         self._csv_content = csv_content
         self._rdbms_engine = DbEngineFactory.create(rdbms)
+        self._player_save_notifier = player_save_notifier
 
     def set_csv_content(self, csv_content):
         self._csv_content = csv_content
@@ -25,3 +26,4 @@ class CsvToDbImporter:
                 for player_info_list in fut_players_csv_iterator:
                     card = FcPlayerCardFactory.create(player_info_list)
                     dbcardinsertion.insert_card(card)
+                    self._player_save_notifier.complete()

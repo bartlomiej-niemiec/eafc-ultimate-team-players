@@ -19,6 +19,7 @@ class UtpGetAllPlayers(UtpBase):
         super().__init__(config)
         self.start_page_number = config.START_PAGE
         self.last_page_number = config.END_PAGE
+        self.ea_fc_version = config.EA_FC_VERSION
         self._logging_queue = ThreadSafeQueue()
         self._no_players_in_last_page = None
         self._logging_thread = None
@@ -50,11 +51,12 @@ class UtpGetAllPlayers(UtpBase):
             self._player_save_notifier,
             self._config.CSV_FILEPATH,
             self._config.LOGGING_THREAD_DELAY_S,
-            self._config.INCLUDE_PLAYER_STATS
+            self._config.INCLUDE_PLAYER_STATS,
+            self.ea_fc_version
         )
 
     def _get_last_players_page(self):
-        futwiz_last_page = LastPlayersPage()
+        futwiz_last_page = LastPlayersPage(self.ea_fc_version)
         futwiz_last_page_number = futwiz_last_page.get_page_number()
         self._no_players_in_last_page = futwiz_last_page.get_no_players()
         if self.last_page_number:
@@ -68,7 +70,7 @@ class UtpGetAllPlayers(UtpBase):
             self._proxy_pool = ProxyPool(get_proxy_servers_from_file(self._config.PROXY_SERVERS_FILEPATH))
         self._toolset = Toolset(
             self._logging_queue,
-            PlayerPageUrlFactory.create(self.start_page_number, PlayersPageType.AllPlayers),
+            PlayerPageUrlFactory.create(self.start_page_number, PlayersPageType.AllPlayers, self.ea_fc_version),
             self._config.DELAY_TO_NEXT_REQUEST_S,
             HttpGetRequestFactory.create(self._proxy_pool, self._config.MAX_RETRIES),
             PlayersPageType.AllPlayers
