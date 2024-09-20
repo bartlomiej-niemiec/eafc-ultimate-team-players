@@ -2,5 +2,5 @@ from enum import IntEnum
 
 
 class EaFcVersions(IntEnum):
-    EA_FC_24 = 1
-    EA_FC_25 = 2
+    EA_FC_24 = 24
+    EA_FC_25 = 25

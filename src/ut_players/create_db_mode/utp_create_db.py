@@ -13,5 +13,5 @@ class UtpCreateDbFromCsv(UtpBase):
         csv_content = get_csv_content(self._config.CSV_FILEPATH)
         self._init_progress_bar(csv_content.shape[0])
         self._init_player_progress_notification()
-        csvtodbimporter = CsvToDbImporter(csv_content, RDBMS.SQLLITE3, self._player_save_notifier)
+        csvtodbimporter = CsvToDbImporter(csv_content, RDBMS.SQLLITE3, self._player_save_notifier, self._config.EA_FC_VERSION)
         csvtodbimporter.run()

@@ -9,9 +9,9 @@ from utils.ea_fc_card import FcPlayerCardFactory
 
 class CsvToDbImporter:
 
-    def __init__(self, csv_content, rdbms, player_save_notifier):
+    def __init__(self, csv_content, rdbms, player_save_notifier, ea_fc_version):
         self._csv_content = csv_content
-        self._rdbms_engine = DbEngineFactory.create(rdbms)
+        self._rdbms_engine = DbEngineFactory.create(rdbms, ea_fc_version)
         self._player_save_notifier = player_save_notifier
 
     def set_csv_content(self, csv_content):

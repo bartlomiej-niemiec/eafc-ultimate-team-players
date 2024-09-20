@@ -6,7 +6,7 @@ from futwiz.players_page.html_elements_constants.common_html_constants import A_
 
 
 class LastPlayersPage:
-    _PAGE_START = 733
+    _PAGE_START = 640
 
     def __init__(self, ea_fc_version):
         self.page_url_generator = PlayerPageUrlFactory.create(self._PAGE_START, PlayersPageType.AllPlayers,
