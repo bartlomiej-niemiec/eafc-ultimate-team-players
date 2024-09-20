@@ -1,8 +1,12 @@
-# FC24 Ultimate Team PLAYERS
+# EAFC Ultimate Team PLAYERS
 
-This repository contains script to automatically fetch FC24 Ultimate Team players cards from [Futwiz](https://www.futwiz.com/en/fc24/) website.
+This repository contains script to automatically fetch EAFC Ultimate Team players cards from [Futwiz](https://www.futwiz.com) website.
 Player card data include in game stats, market price, playstyles etc. 
 
+# Supported EAFC versions
+
+* EAFC24,
+* EAFC25
 
 ## Installation
 
@@ -30,6 +34,7 @@ if __name__ == "__main__":
 
 ```
 Each run of script can be configured in **config.py** im term of:
+* eafc version,
 * using proxy servers (getting all of the players and price update mode),
 * number of working/scraping threads (getting all of the players and price update mode),
 * csv filepath,
@@ -43,3 +48,4 @@ How proxy servers .txt file should look like:
 <address_ip>:<port>
 <address_ip>:<port>
 ```
+
