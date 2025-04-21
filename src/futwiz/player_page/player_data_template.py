@@ -32,6 +32,8 @@ class GeneralPlayerData:
     ID = "ID"
     OverallRating = "Overall Rating"
     FutwizLink = "Futwiz Link"
+    PlayerID = 'Player ID'
+    CardID = 'Card ID'
 
     @classmethod
     def get_dict_template(cls):

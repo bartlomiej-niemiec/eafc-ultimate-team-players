@@ -60,10 +60,11 @@ class PlayerDataParser:
     def _fetch_player_price(self):
         price_dive = self._soup.find(DIV_TAG, class_=self._futwiz_html_constants.DIV_PLAYER_MARKET_VALUE)
         price = None
-        for item in price_dive.contents:
-            if type(item) is NavigableString:
-                price = int(item.replace(',', ''))
-                break
+        if price_dive is not None:
+            for item in price_dive.contents:
+                if type(item) is NavigableString:
+                    price = int(item.replace(',', ''))
+                    break
         self._player_data_dict[GeneralPlayerData.Price] = price
 
     def _fetch_player_overall_rating(self):
